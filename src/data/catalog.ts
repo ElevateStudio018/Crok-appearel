@@ -8,8 +8,7 @@ export type Size = (typeof sizes)[number];
 export interface CatalogItem {
   id: string;
   name: string;
-  category: string;
-  colour: string;
+  colour: { en: string; sv: string };
   price: number;
   preOrder: boolean;
   soldOut: boolean;
@@ -20,8 +19,7 @@ export const catalog: CatalogItem[] = [
   {
     id: 'cork-3-baggy-pants',
     name: 'CORK 3 Baggy Pants',
-    category: 'Ski pants',
-    colour: 'Black',
+    colour: { en: 'Black', sv: 'Svart' },
     price: 1500,
     preOrder: true,
     soldOut: false,
@@ -30,8 +28,7 @@ export const catalog: CatalogItem[] = [
   {
     id: 'cork-3-puff',
     name: 'CORK 3 Puff Jacket',
-    category: 'Puffer jacket',
-    colour: 'Black',
+    colour: { en: 'Black', sv: 'Svart' },
     price: 3000,
     preOrder: true,
     soldOut: false,

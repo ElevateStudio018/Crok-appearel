@@ -1,16 +1,26 @@
 ---
 import Icon from './Icon.astro';
 import { site } from '../data/site';
+import type { Lang } from '../i18n';
+import { fill, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].service;
+const vars = { date: site.shipsBy[lang], city: site.address.city };
 
 const items = [
-  { icon: 'snow', title: 'Limited runs', text: '25 pieces per style, made after the pre-order closes.' },
-  { icon: 'truck', title: `Ships before ${site.shipsBy}`, text: `Sent from ${site.address.city} with tracking.` },
-  { icon: 'return', title: '14-day returns', text: 'Right of withdrawal from the day you receive it.' },
-  { icon: 'lock', title: 'Secure checkout', text: 'Payments handled by Stripe. We never see your card.' },
+  { icon: 'snow', title: t.limitedTitle, text: t.limitedText },
+  { icon: 'truck', title: fill(t.shipsTitle, vars), text: fill(t.shipsText, vars) },
+  { icon: 'return', title: t.returnsTitle, text: t.returnsText },
+  { icon: 'lock', title: t.secureTitle, text: t.secureText },
 ] as const;
 ---
 
-<section class="service-row" aria-label="Why shop with CORK">
+<section class="service-row" aria-label={t.label}>
   <div class="container">
   <ul role="list" class="service-grid">
     {

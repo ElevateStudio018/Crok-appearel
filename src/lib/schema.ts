@@ -1,11 +1,12 @@
 import { site } from '../data/site';
 import type { Product } from '../data/products';
+import { languages, localizePath, type Lang } from '../i18n';
 
 // JSON-LD builders (https://schema.org). Rendered by BaseLayout.
 
-const abs = (path: string) => new URL(path, site.url).toString();
+export const abs = (path: string) => new URL(path, site.url).toString();
 
-export const organizationSchema = () => {
+export const organizationSchema = (lang: Lang) => {
   const sameAs = Object.values(site.social).filter(Boolean);
   return {
     '@context': 'https://schema.org',
@@ -14,7 +15,7 @@ export const organizationSchema = () => {
     name: site.name,
     url: site.url,
     logo: abs('/icon-512.png'),
-    description: site.description,
+    description: site.description[lang],
     address: {
       '@type': 'PostalAddress',
       streetAddress: site.address.street,
@@ -25,14 +26,24 @@ export const organizationSchema = () => {
   };
 };
 
-export const websiteSchema = () => ({
+export const websiteSchema = (lang: Lang) => ({
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  '@id': abs('/#website'),
+  '@id': abs(`${localizePath('/', lang)}#website`),
   name: site.name,
-  url: site.url,
-  inLanguage: 'en',
+  url: abs(localizePath('/', lang)),
+  inLanguage: languages[lang].htmlLang,
   publisher: { '@id': abs('/#organization') },
+});
+
+export const webPageSchema = (type: string, name: string, path: string, lang: Lang) => ({
+  '@context': 'https://schema.org',
+  '@type': type,
+  name,
+  url: abs(path),
+  inLanguage: languages[lang].htmlLang,
+  isPartOf: { '@id': abs(`${localizePath('/', lang)}#website`) },
+  about: { '@id': abs('/#organization') },
 });
 
 export const breadcrumbSchema = (items: { name: string; path: string }[]) => ({
@@ -55,34 +66,37 @@ const returnPolicy = {
   returnFees: 'https://schema.org/ReturnShippingFees',
 };
 
-export const productSchema = (product: Product, imageUrls: string[]) => ({
-  '@context': 'https://schema.org',
-  '@type': 'Product',
-  '@id': abs(`/product/${product.id}#product`),
-  name: product.name,
-  description: [product.summary, ...product.description].join(' '),
-  sku: product.id,
-  image: imageUrls,
-  brand: { '@type': 'Brand', name: site.name },
-  color: product.colour,
-  material: product.material,
-  category: product.category,
-  size: 'S, M, L',
-  offers: {
-    '@type': 'Offer',
-    url: abs(`/product/${product.id}`),
-    priceCurrency: site.currency,
-    price: product.price,
-    itemCondition: 'https://schema.org/NewCondition',
-    availability: product.soldOut
-      ? 'https://schema.org/SoldOut'
-      : product.preOrder
-        ? 'https://schema.org/PreOrder'
-        : 'https://schema.org/InStock',
-    seller: { '@id': abs('/#organization') },
-    hasMerchantReturnPolicy: returnPolicy,
-  },
-});
+export const productSchema = (product: Product, imageUrls: string[], lang: Lang) => {
+  const url = abs(localizePath(`/product/${product.id}`, lang));
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    '@id': `${url}#product`,
+    name: product.name,
+    description: [product.summary, ...product.description].join(' '),
+    sku: product.id,
+    image: imageUrls,
+    brand: { '@type': 'Brand', name: site.name },
+    color: product.colour,
+    material: product.material,
+    category: product.category,
+    size: 'S, M, L',
+    offers: {
+      '@type': 'Offer',
+      url,
+      priceCurrency: site.currency,
+      price: product.price,
+      itemCondition: 'https://schema.org/NewCondition',
+      availability: product.soldOut
+        ? 'https://schema.org/SoldOut'
+        : product.preOrder
+          ? 'https://schema.org/PreOrder'
+          : 'https://schema.org/InStock',
+      seller: { '@id': abs('/#organization') },
+      hasMerchantReturnPolicy: returnPolicy,
+    },
+  };
+};
 
 export const itemListSchema = (items: { name: string; path: string }[]) => ({
   '@context': 'https://schema.org',

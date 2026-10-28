@@ -68,7 +68,9 @@ export const initCartBadge = () => {
     document.querySelectorAll<HTMLElement>('[data-cart-count]').forEach((el) => {
       el.textContent = String(count);
       el.toggleAttribute('data-empty', count === 0);
-      el.closest('a')?.setAttribute('aria-label', `Cart, ${count} ${count === 1 ? 'item' : 'items'}`);
+      const link = el.closest('a');
+      const template = count === 1 ? link?.dataset.labelOne : link?.dataset.labelMany;
+      if (link && template) link.setAttribute('aria-label', template.replace('{n}', String(count)));
     });
   };
   update(read());

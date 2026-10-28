@@ -12,6 +12,11 @@ import { site } from '../../src/data/site';
 const MAX_QTY = 5;
 const MAX_LINES = 10;
 
+const text = {
+  en: { prefix: '', size: 'size', preOrder: `Pre-order · ships before ${site.shipsBy.en}` },
+  sv: { prefix: '/sv', size: 'storlek', preOrder: `Förbeställning · skickas före ${site.shipsBy.sv}` },
+};
+
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
@@ -22,8 +27,11 @@ export default async (req: Request) => {
   if (!secret) return json({ error: 'checkout_not_configured' }, 503);
 
   let items: unknown;
+  let lang: keyof typeof text = 'en';
   try {
-    ({ items } = await req.json());
+    const body = await req.json();
+    items = body.items;
+    if (body.lang === 'sv') lang = 'sv';
   } catch {
     return json({ error: 'invalid_body' }, 400);
   }
@@ -34,9 +42,11 @@ export default async (req: Request) => {
   const origin = new URL(req.url).origin;
   const params = new URLSearchParams();
   params.set('mode', 'payment');
-  params.set('success_url', `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`);
-  params.set('cancel_url', `${origin}/cart`);
-  params.set('locale', 'auto');
+  const t = text[lang];
+  params.set('success_url', `${origin}${t.prefix}/checkout/success?session_id={CHECKOUT_SESSION_ID}`);
+  params.set('cancel_url', `${origin}${t.prefix}/cart`);
+  params.set('locale', lang);
+  params.set('metadata[language]', lang);
   params.set('billing_address_collection', 'auto');
   params.set('shipping_address_collection[allowed_countries][0]', 'SE');
   params.set('phone_number_collection[enabled]', 'true');
@@ -58,11 +68,11 @@ export default async (req: Request) => {
     params.set(`${p}[quantity]`, String(qty));
     params.set(`${p}[price_data][currency]`, 'sek');
     params.set(`${p}[price_data][unit_amount]`, String(product.price * 100));
-    params.set(`${p}[price_data][product_data][name]`, `${product.name} – ${product.colour}, size ${size}`);
+    params.set(`${p}[price_data][product_data][name]`, `${product.name} – ${product.colour[lang]}, ${t.size} ${size}`);
     params.set(`${p}[price_data][product_data][metadata][product_id]`, product.id);
     params.set(`${p}[price_data][product_data][metadata][size]`, size);
     if (product.preOrder) {
-      params.set(`${p}[price_data][product_data][description]`, `Pre-order · ships before ${site.shipsBy}`);
+      params.set(`${p}[price_data][product_data][description]`, t.preOrder);
     }
     params.set(`metadata[line_${i}]`, `${product.id}:${size}:${qty}`);
   }

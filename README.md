@@ -7,12 +7,30 @@ Built with [Astro](https://astro.build) as a static site: every page is pre-rend
 
 ```bash
 npm install
-npm run dev      # http://localhost:4321
-npm run build    # production build into dist/
-npm run check    # type check
+npm run dev              # http://localhost:4321
+npm run build            # production build into dist/
+npm run check            # type check
+npm run preview:githack  # build + write preview/ for raw.githack.com
 ```
 
 Requires Node 22.12 or newer.
+
+## Preview on githack
+
+The `preview/` folder is a copy of the built site with relative links, so it can be opened straight from GitHub via githack:
+
+- English: https://raw.githack.com/ElevateStudio018/Crok-appearel/claude/magical-cerf-5pjzkw/preview/index.html
+- Swedish: https://raw.githack.com/ElevateStudio018/Crok-appearel/claude/magical-cerf-5pjzkw/preview/sv.html
+
+Run `npm run preview:githack` and commit `preview/` to update it (swap the branch name in the URL for other branches). The preview is `noindex`, and checkout and forms only work on Netlify.
+
+## Languages (EN / SV)
+
+English is served at the root (`/shop`) and Swedish under `/sv` (`/sv/shop`). The EN/SV switch in the header (and in the mobile menu) links to the same page in the other language. Every page has `hreflang` alternates and the sitemap lists both versions.
+
+- UI text: `src/i18n/ui.ts` (`sv` is type-checked against `en`, so a missing translation fails `npm run check`)
+- Product copy, FAQ, policies and photo alt texts have an `en` and an `sv` entry in `src/data/`
+- Pages live in `src/views/`; `src/pages/` and `src/pages/sv/` only pick the language
 
 ## Project structure
 
@@ -21,17 +39,22 @@ src/
   data/
     site.ts        Brand info, address, navigation, social links, announcement bar
     catalog.ts     Prices, sizes, pre-order status (also used by the checkout function)
-    products.ts    Product copy, specs, size guides, gallery images, SEO titles
+    products.ts    Product copy (EN/SV), specs, size guides, gallery images, SEO titles
     photos.ts      Editorial photos + Pexels credits
     faq.ts         FAQ (shown on the home page and as FAQPage schema)
-  pages/           One file per URL (/, /shop, /product/[id], /about, /contact, /policies, /cart …)
+    policies.ts    Pre-order, shipping, returns, privacy and purchase terms
+  i18n/            Language routing helpers and UI strings (EN/SV)
+  views/           Page templates shared by both languages
+  pages/           One file per URL (/, /shop, /product/[id] …) – Swedish copies under pages/sv/
   components/      Header, Footer, Hero, ProductCard, Newsletter …
   layouts/         BaseLayout – <head>, meta tags, Open Graph, JSON-LD
   lib/schema.ts    Structured data (Organization, Product, Breadcrumb, FAQ …)
   scripts/         Cart (localStorage) and form handling in the browser
   assets/          Product photos, Pexels photos (black and white), logo/mascot as SVG
 netlify/functions/checkout.mts   Creates the Stripe Checkout session
-public/og/       Share images (1200×630) – regenerate with node scripts/generate-og.cjs
+public/og/       Share images (1200×630, Swedish in og/sv/) – regenerate with node scripts/generate-og.cjs
+scripts/build-preview.mjs        Writes preview/ for githack
+preview/         Generated githack preview – do not edit by hand
 ```
 
 ### Common changes
@@ -41,6 +64,7 @@ public/og/       Share images (1200×630) – regenerate with node scripts/gener
 | Price, sold out, pre-order | `src/data/catalog.ts` (then regenerate `public/og/` if the price changes) |
 | Product copy, specs, size guide | `src/data/products.ts` |
 | Announcement bar, ship-by date, address | `src/data/site.ts` |
+| Buttons, headings and other UI text | `src/i18n/ui.ts` |
 | Instagram/YouTube/TikTok links | `site.social` in `src/data/site.ts` (empty values are hidden) |
 | New product | Add it to `catalog.ts` + `products.ts` and put its images in `src/assets/products/` |
 
@@ -64,6 +88,7 @@ Old URLs (`/team`, `/videos`, `/backstage`, `/mailing-list`, `/info`) are 301-re
 - Unique `<title>`, meta description and canonical URL on every page
 - Open Graph and Twitter cards with dedicated share images
 - JSON-LD: Organization, WebSite, Product (price, `PreOrder`, return policy), BreadcrumbList, ItemList, FAQPage
+- English and Swedish versions with `hreflang` (en, sv, x-default) and localized Open Graph images
 - `sitemap-index.xml` + `robots.txt`; cart and checkout are `noindex`
 - Images served as AVIF/WebP in responsive sizes, self-hosted font (no Google Fonts calls)
 

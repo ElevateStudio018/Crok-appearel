@@ -1,14 +1,24 @@
 ---
 import Photo from './Photo.astro';
 import { photos } from '../data/photos';
+import { localizePath, type Lang } from '../i18n';
+import { fill, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].newsletter;
+const f = ui[lang].forms;
 ---
 
 <section class="newsletter on-dark" id="newsletter" aria-labelledby="newsletter-title">
-  <Photo photo={photos.starlitSlope} decorative widths={[640, 1024, 1600]} sizes="100vw" class="newsletter-bg" />
+  <Photo photo={photos.starlitSlope} lang={lang} decorative widths={[640, 1024, 1600]} sizes="100vw" class="newsletter-bg" />
   <div class="container newsletter-inner">
-    <span class="eyebrow">Mailing list</span>
-    <h2 id="newsletter-title" class="h2">Get the next drop first.</h2>
-    <p class="lead">Every CORK release is made in small numbers. Join the list and we will tell you before it opens. No spam, unsubscribe any time.</p>
+    <span class="eyebrow">{t.eyebrow}</span>
+    <h2 id="newsletter-title" class="h2">{t.title}</h2>
+    <p class="lead">{t.text}</p>
 
     <form
       class="newsletter-form"
@@ -17,12 +27,16 @@ import { photos } from '../data/photos';
       data-netlify="true"
       netlify-honeypot="bot-field"
       data-ajax-form
+      data-msg-sending={f.sending}
+      data-msg-success={t.success}
+      data-msg-error={f.error}
     >
       <input type="hidden" name="form-name" value="newsletter" />
+      <input type="hidden" name="language" value={lang} />
       <p class="hp" aria-hidden="true">
-        <label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
+        <label>{f.honeypot} <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
       </p>
-      <label class="visually-hidden" for="newsletter-email">Email address</label>
+      <label class="visually-hidden" for="newsletter-email">{t.email}</label>
       <input
         id="newsletter-email"
         class="input"
@@ -30,12 +44,12 @@ import { photos } from '../data/photos';
         name="email"
         required
         autocomplete="email"
-        placeholder="Email address"
+        placeholder={t.email}
       />
-      <button class="btn btn--light" type="submit">Subscribe</button>
+      <button class="btn btn--light" type="submit">{t.submit}</button>
       <p class="form-status" role="status" aria-live="polite" data-form-status></p>
     </form>
-    <p class="newsletter-note">By subscribing you agree to our <a href="/policies#privacy">privacy policy</a>.</p>
+    <p class="newsletter-note" set:html={fill(t.note, { privacy: localizePath('/policies#privacy', lang) })} />
   </div>
 </section>
 

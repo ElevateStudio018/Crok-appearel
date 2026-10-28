@@ -11,6 +11,10 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => !/\/(cart|checkout|404)/.test(page),
+      i18n: {
+        defaultLocale: 'en',
+        locales: { en: 'en', sv: 'sv' },
+      },
     }),
   ],
 });

@@ -5,14 +5,17 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site } from '../data/site';
 import { organizationSchema, websiteSchema } from '../lib/schema';
+import { languages, langs, localizePath, stripLang, type Lang } from '../i18n';
+import { ui } from '../i18n/ui';
 
 interface Props {
+  lang: Lang;
   /** Page title without the brand suffix. */
   title: string;
   description: string;
   /** Use the title as-is (no " | CORK" suffix). */
   rawTitle?: boolean;
-  /** Absolute or root-relative path to a 1200×630 share image. */
+  /** Root-relative path to a 1200×630 share image (without language folder). */
   ogImage?: string;
   ogImageAlt?: string;
   ogType?: 'website' | 'product' | 'article';
@@ -21,36 +24,53 @@ interface Props {
 }
 
 const {
+  lang,
   title,
   description,
   rawTitle = false,
-  ogImage = '/og/cork-default.jpg',
-  ogImageAlt = 'CORK – independent freeski outerwear from Sweden',
+  ogImage = 'cork-default.jpg',
+  ogImageAlt = site.description[lang],
   ogType = 'website',
   noindex = false,
   schema = [],
 } = Astro.props;
 
+const t = ui[lang];
 const fullTitle = rawTitle ? title : `${title} | ${site.name}`;
-const pathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/') || '/';
-const canonical = new URL(pathname, site.url).toString();
-const ogImageUrl = new URL(ogImage, site.url).toString();
-const jsonLd = [organizationSchema(), websiteSchema(), ...schema];
+const pathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '') || '/';
+const basePath = stripLang(pathname);
+const url = (l: Lang) => new URL(localizePath(basePath, l), site.url).toString();
+const canonical = url(lang);
+const ogImageUrl = new URL(`/og/${lang === 'en' ? '' : `${lang}/`}${ogImage}`, site.url).toString();
+const jsonLd = [organizationSchema(lang), websiteSchema(lang), ...schema];
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={languages[lang].htmlLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    {noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonical} />}
+    {
+      noindex ? (
+        <meta name="robots" content="noindex, follow" />
+      ) : (
+        <>
+          <link rel="canonical" href={canonical} />
+          {langs.map((l) => (
+            <link rel="alternate" hreflang={languages[l].htmlLang} href={url(l)} />
+          ))}
+          <link rel="alternate" hreflang="x-default" href={url('en')} />
+        </>
+      )
+    }
 
     <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
 
     <meta property="og:site_name" content={site.name} />
-    <meta property="og:locale" content={site.locale} />
+    <meta property="og:locale" content={languages[lang].ogLocale} />
+    {langs.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={languages[l].ogLocale} />)}
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
@@ -76,12 +96,12 @@ const jsonLd = [organizationSchema(), websiteSchema(), ...schema];
     {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
-    <Header />
+    <a class="skip-link" href="#main">{t.meta.skip}</a>
+    <Header lang={lang} basePath={basePath} />
     <main id="main">
       <slot />
     </main>
-    <Footer />
+    <Footer lang={lang} />
 
     <script>
       import { initCartBadge } from '../scripts/cart';

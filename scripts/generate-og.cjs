@@ -18,9 +18,36 @@ body { width: 1200px; height: 630px; font-family: A, sans-serif; overflow: hidde
 .eyebrow { font-size: 18px; font-weight: 600; font-stretch: 110%; letter-spacing: .16em; text-transform: uppercase; }
 .title { font-weight: 800; font-stretch: 125%; text-transform: uppercase; line-height: .92; letter-spacing: -.02em; }
 `;
-const pages = [
+// Text per language. English images go to public/og/, Swedish to public/og/sv/.
+const copy = {
+  en: {
+    dir: '',
+    collection: 'CORK 3 Collection',
+    preorderEyebrow: 'CORK 3 Collection · Pre-order',
+    sub: 'Baggy ski pants &amp; puffer jackets from Uppsala, Sweden. 25 pieces per style.',
+    tag: 'Pre-order',
+    pieces: '25 pieces',
+    currency: 'SEK',
+  },
+  sv: {
+    dir: 'sv',
+    collection: 'CORK 3-kollektionen',
+    preorderEyebrow: 'CORK 3-kollektionen · Förbeställ',
+    sub: 'Baggy skidbyxor &amp; dunjackor från Uppsala. 25 exemplar per modell.',
+    tag: 'Förbeställ',
+    pieces: '25 ex',
+    currency: 'kr',
+  },
+};
+
+const products = [
+  ['cork-3-baggy-pants', 'CORK 3 Baggy Pants', '1 500', 'cork-3-pants-front.jpg'],
+  ['cork-3-puff', 'CORK 3 Puff Jacket', '3 000', 'cork-3-puff-front.jpg'],
+];
+
+const pages = Object.values(copy).flatMap((c) => [
   {
-    out: 'cork-default.jpg',
+    out: path.join(c.dir, 'cork-default.jpg'),
     html: `<style>${base}
       body { background: #0e0e0e; color: #f4f3ef; display: grid; grid-template-columns: 560px 640px; }
       .copy { padding: 64px; display: flex; flex-direction: column; justify-content: space-between; }
@@ -30,15 +57,12 @@ const pages = [
       .img { background: url(file://${R}/src/assets/photos/night-rail-jump.jpg) center 35% / cover; }
     </style>
     <div class="copy"><div class="logo">${logo}</div>
-      <div><p class="eyebrow">CORK 3 Collection · Pre-order</p><h1 class="title">Independent by nature.</h1>
-      <p class="sub">Baggy ski pants &amp; puffer jackets from Uppsala, Sweden. 25 pieces per style.</p></div></div>
+      <div><p class="eyebrow">${c.preorderEyebrow}</p><h1 class="title">Independent by nature.</h1>
+      <p class="sub">${c.sub}</p></div></div>
     <div class="img"></div>`,
   },
-  ...[
-    ['cork-3-baggy-pants', 'CORK 3 Baggy Pants', '1 500 SEK', 'cork-3-pants-front.jpg'],
-    ['cork-3-puff', 'CORK 3 Puff Jacket', '3 000 SEK', 'cork-3-puff-front.jpg'],
-  ].map(([id, name, price, img]) => ({
-    out: `${id}.jpg`,
+  ...products.map(([id, name, price, img]) => ({
+    out: path.join(c.dir, `${id}.jpg`),
     html: `<style>${base}
       body { background: #f5f5f5; color: #0e0e0e; display: grid; grid-template-columns: 600px 600px; }
       .copy { padding: 64px; display: flex; flex-direction: column; justify-content: space-between; background: #fff; }
@@ -49,11 +73,12 @@ const pages = [
       .img { background: url(file://${R}/src/assets/products/${img}) center / 108% no-repeat #f5f5f5; }
     </style>
     <div class="copy"><div class="logo">${logo}</div>
-      <div><p class="eyebrow">CORK 3 Collection</p><h1 class="title">${name}</h1>
-      <div class="meta"><span>${price}</span><span class="tag">Pre-order</span><span class="tag" style="background:#fff;color:#0e0e0e;box-shadow:inset 0 0 0 1.5px #0e0e0e">25 pieces</span></div></div></div>
+      <div><p class="eyebrow">${c.collection}</p><h1 class="title">${name}</h1>
+      <div class="meta"><span>${price} ${c.currency}</span><span class="tag">${c.tag}</span><span class="tag" style="background:#fff;color:#0e0e0e;box-shadow:inset 0 0 0 1.5px #0e0e0e">${c.pieces}</span></div></div></div>
     <div class="img"></div>`,
   })),
-];
+]);
+
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1200, height: 630 } });
@@ -63,7 +88,9 @@ const pages = [
     await p.goto('file://' + tmp, { waitUntil: 'load' });
     await p.evaluate(() => document.fonts.ready);
     await p.waitForTimeout(200);
-    await p.screenshot({ path: path.join(R, 'public/og', pg.out), type: 'jpeg', quality: 86 });
+    const out = path.join(R, 'public/og', pg.out);
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    await p.screenshot({ path: out, type: 'jpeg', quality: 86 });
     console.log('wrote', pg.out);
   }
   await b.close();

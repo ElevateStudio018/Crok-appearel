@@ -1,0 +1,177 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { site } from '../data/site';
+import { breadcrumbSchema, webPageSchema } from '../lib/schema';
+import { localizePath, type Lang } from '../i18n';
+import { fill, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].contact;
+const f = ui[lang].forms;
+const href = (path: string) => localizePath(path, lang);
+
+const crumbs = [
+  { name: ui[lang].meta.home, path: href('/') },
+  { name: t.crumb, path: href('/contact') },
+];
+
+const schema = [breadcrumbSchema(crumbs), webPageSchema('ContactPage', t.heading, href('/contact'), lang)];
+const ordersText = fill(t.ordersText, {
+  preorder: href('/policies#pre-order'),
+  shipping: href('/policies#shipping'),
+  returns: href('/policies#returns'),
+});
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} schema={schema}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+
+  <div class="container contact">
+    <section class="contact-intro" aria-labelledby="contact-title">
+      <span class="eyebrow muted">{t.eyebrow}</span>
+      <h1 id="contact-title" class="h1">{t.heading}</h1>
+      <p class="lead">{t.lead}</p>
+
+      <dl class="contact-facts">
+        <div>
+          <dt>{t.address}</dt>
+          <dd>
+            {site.name}<br />
+            {site.address.street}<br />
+            {site.address.city}, {site.address.country[lang]}
+          </dd>
+        </div>
+        <div>
+          <dt>{t.orders}</dt>
+          <dd set:html={ordersText} />
+        </div>
+      </dl>
+    </section>
+
+    <section class="contact-form-wrap" aria-label={t.formLabel}>
+      <form
+        class="contact-form"
+        name="contact"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        data-ajax-form
+        data-msg-sending={f.sending}
+        data-msg-success={t.success}
+        data-msg-error={f.error}
+      >
+        <input type="hidden" name="form-name" value="contact" />
+        <input type="hidden" name="language" value={lang} />
+        <p class="hp" aria-hidden="true">
+          <label>{f.honeypot} <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
+        </p>
+
+        <div class="field">
+          <label for="contact-name">{t.name}</label>
+          <input id="contact-name" class="input" name="name" required maxlength="100" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="contact-email">{t.email}</label>
+          <input id="contact-email" class="input" name="email" type="email" required maxlength="255" autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="contact-order">{t.order} <span class="muted">{t.optional}</span></label>
+          <input id="contact-order" class="input" name="order" maxlength="60" />
+        </div>
+        <div class="field">
+          <label for="contact-topic">{t.topic}</label>
+          <select id="contact-topic" class="input" name="topic">
+            {t.topics.map((topic) => <option>{topic}</option>)}
+          </select>
+        </div>
+        <div class="field">
+          <label for="contact-message">{t.message}</label>
+          <textarea id="contact-message" class="input" name="message" required maxlength="2000"></textarea>
+        </div>
+
+        <button class="btn" type="submit">{t.submit}</button>
+        <p class="form-status" role="status" aria-live="polite" data-form-status></p>
+        <p class="muted small" set:html={fill(t.privacy, { privacy: href('/policies#privacy') })} />
+      </form>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .contact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: clamp(32px, 7vw, 112px);
+    padding-block: clamp(24px, 4vw, 56px) clamp(64px, 9vw, 128px);
+  }
+
+  .contact-intro {
+    display: grid;
+    align-content: start;
+    gap: 20px;
+  }
+
+  .contact-facts {
+    display: grid;
+    gap: 24px;
+    margin-top: 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .contact-facts dt {
+    margin-bottom: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-stretch: 110%;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .contact-facts dd {
+    margin: 0;
+    color: var(--ink-2);
+  }
+
+  .contact-form {
+    display: grid;
+    gap: 20px;
+    padding: clamp(20px, 3vw, 40px);
+    background: var(--surface);
+  }
+
+  .contact-form .btn {
+    justify-self: start;
+  }
+
+  select.input {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position:
+      calc(100% - 22px) 50%,
+      calc(100% - 17px) 50%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 44px;
+  }
+
+  .small {
+    font-size: 0.8125rem;
+  }
+
+  @media (max-width: 860px) {
+    .contact {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { initAjaxForms } from '../scripts/forms';
+  initAjaxForms();
+</script>

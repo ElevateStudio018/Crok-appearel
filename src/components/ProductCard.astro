@@ -2,17 +2,21 @@
 import { Image } from 'astro:assets';
 import type { Product } from '../data/products';
 import { formatPrice } from '../lib/format';
+import { localizePath, type Lang } from '../i18n';
+import { fill, ui } from '../i18n/ui';
 
 interface Props {
   product: Product;
+  lang: Lang;
   headingLevel?: 'h2' | 'h3';
   eager?: boolean;
 }
 
-const { product, headingLevel = 'h3', eager = false } = Astro.props;
+const { product, lang, headingLevel = 'h3', eager = false } = Astro.props;
+const t = ui[lang].product;
 const Heading = headingLevel;
 const [primary, secondary] = product.gallery;
-const href = `/product/${product.id}`;
+const href = localizePath(`/product/${product.id}`, lang);
 ---
 
 <article class="product-card">
@@ -38,8 +42,8 @@ const href = `/product/${product.id}`;
       )
     }
     <span class="card-badges">
-      {product.soldOut ? <span class="tag">Sold out</span> : product.preOrder && <span class="tag">Pre-order</span>}
-      <span class="tag tag--outline">{product.editionLimit} pieces</span>
+      {product.soldOut ? <span class="tag">{t.soldOut}</span> : product.preOrder && <span class="tag">{t.preOrderTag}</span>}
+      <span class="tag tag--outline">{fill(t.pieces, { n: product.editionLimit })}</span>
     </span>
   </a>
   <div class="card-body">
@@ -47,7 +51,7 @@ const href = `/product/${product.id}`;
       <Heading class="card-title"><a href={href}>{product.name}</a></Heading>
       <p class="card-meta">{product.category} · {product.colour}</p>
     </div>
-    <p class="card-price">{formatPrice(product.price)}</p>
+    <p class="card-price">{formatPrice(product.price, lang)}</p>
   </div>
 </article>
 

@@ -1,0 +1,14 @@
+---
+import Product from '../../../views/Product.astro';
+import { getProducts, type Product as ProductData } from '../../../data/products';
+
+export function getStaticPaths() {
+  return getProducts('sv').map((product) => ({ params: { id: product.id }, props: { product } }));
+}
+
+interface Props {
+  product: ProductData;
+}
+---
+
+<Product lang="sv" product={Astro.props.product} />

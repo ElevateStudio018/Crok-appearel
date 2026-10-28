@@ -1,0 +1,151 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { site } from '../data/site';
+import { policySections } from '../data/policies';
+import { breadcrumbSchema } from '../lib/schema';
+import { localizePath, type Lang } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].policies;
+const href = (path: string) => localizePath(path, lang);
+const sections = policySections[lang];
+
+const crumbs = [
+  { name: ui[lang].meta.home, path: href('/') },
+  { name: t.crumb, path: href('/policies') },
+];
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} schema={[breadcrumbSchema(crumbs)]}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+
+  <div class="container policies">
+    <header class="policies-head">
+      <span class="eyebrow muted">{t.eyebrow}</span>
+      <h1 class="h1">{t.heading}</h1>
+      <p class="lead">{t.lead}</p>
+    </header>
+
+    <nav class="policies-toc" aria-label={t.toc}>
+      <p class="eyebrow muted">{t.toc}</p>
+      <ul role="list">
+        {
+          sections.map((s) => (
+            <li>
+              <a href={`#${s.id}`}>{s.title}</a>
+            </li>
+          ))
+        }
+        <li><a href="#contact">{t.contact}</a></li>
+      </ul>
+    </nav>
+
+    <div class="policies-body">
+      {
+        sections.map((s) => (
+          <section id={s.id} aria-labelledby={`${s.id}-title`}>
+            <h2 id={`${s.id}-title`} class="h3">
+              {s.title}
+            </h2>
+            {s.body.map((p) => (
+              <p>{p}</p>
+            ))}
+          </section>
+        ))
+      }
+      <section id="contact" aria-labelledby="contact-title">
+        <h2 id="contact-title" class="h3">{t.contact}</h2>
+        <address>
+          {site.name}<br />
+          {site.address.street}<br />
+          {site.address.city}, {site.address.country[lang]}
+        </address>
+        <p><a href={href('/contact')}>{t.sendMessage}</a></p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .policies {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 32px clamp(32px, 6vw, 96px);
+    padding-block: clamp(24px, 4vw, 56px) clamp(64px, 9vw, 128px);
+  }
+
+  .policies-head {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 16px;
+    padding-bottom: clamp(16px, 3vw, 32px);
+  }
+
+  .policies-toc {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    align-self: start;
+  }
+
+  .policies-toc ul {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+    padding-left: 16px;
+    border-left: 1px solid var(--line);
+  }
+
+  .policies-toc a {
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .policies-toc a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .policies-body {
+    max-width: 44em;
+  }
+
+  .policies-body section {
+    padding-block: 28px;
+    border-top: 1px solid var(--line);
+  }
+
+  .policies-body section:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .policies-body h2 {
+    margin-bottom: 14px;
+  }
+
+  .policies-body p,
+  .policies-body address {
+    color: var(--ink-2);
+    font-style: normal;
+  }
+
+  .policies-body p + p {
+    margin-top: 0.8em;
+  }
+
+  @media (max-width: 860px) {
+    .policies {
+      grid-template-columns: 1fr;
+    }
+
+    .policies-toc {
+      position: static;
+    }
+  }
+</style>

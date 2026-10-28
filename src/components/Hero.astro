@@ -2,13 +2,22 @@
 import { Picture } from 'astro:assets';
 import Icon from './Icon.astro';
 import { photos } from '../data/photos';
+import { localizePath, type Lang } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].home;
 ---
 
 <section class="hero" aria-labelledby="hero-title">
   <div class="hero-media">
     <Picture
       src={photos.hero.src}
-      alt={photos.hero.alt}
+      alt={photos.hero.alt[lang]}
       formats={['avif', 'webp']}
       widths={[480, 720, 960, 1280, 1600]}
       sizes="(min-width: 861px) 50vw, 100vw"
@@ -19,14 +28,12 @@ import { photos } from '../data/photos';
   </div>
 
   <div class="hero-copy">
-    <span class="eyebrow">CORK 3 Collection — Pre-order now</span>
-    <h1 id="hero-title" class="hero-title">Independent<br /> by nature.</h1>
-    <p class="hero-text">
-      Technical baggy outerwear from Uppsala, Sweden. Two pieces, 25 of each, made for nights on the rail and days in the city.
-    </p>
+    <span class="eyebrow">{t.heroEyebrow}</span>
+    <h1 id="hero-title" class="hero-title" set:html={t.heroTitle} />
+    <p class="hero-text">{t.heroText}</p>
     <div class="hero-actions">
-      <a class="btn btn--light" href="/shop">Shop the collection <Icon name="arrow-right" size={16} /></a>
-      <a class="btn btn--outline-light" href="/about">Our story</a>
+      <a class="btn btn--light" href={localizePath('/shop', lang)}>{t.heroShop} <Icon name="arrow-right" size={16} /></a>
+      <a class="btn btn--outline-light" href={localizePath('/about', lang)}>{t.heroStory}</a>
     </div>
   </div>
 </section>

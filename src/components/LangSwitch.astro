@@ -1,0 +1,101 @@
+---
+import { languages, langs, localizePath, type Lang } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  /** Current path without language prefix, e.g. "/shop". */
+  basePath: string;
+  variant?: 'compact' | 'large';
+}
+
+const { lang, basePath, variant = 'compact' } = Astro.props;
+const t = ui[lang];
+---
+
+<nav class:list={['lang-switch', `lang-switch--${variant}`]} aria-label={t.header.language}>
+  {
+    langs.map((l) =>
+      l === lang ? (
+        <span class="lang-current" aria-current="true" lang={languages[l].htmlLang}>
+          {languages[l].label}
+        </span>
+      ) : (
+        <a
+          href={localizePath(basePath, l)}
+          hreflang={languages[l].htmlLang}
+          lang={languages[l].htmlLang}
+          aria-label={ui[l].header.switchTo}
+          data-lang-link
+        >
+          {languages[l].label}
+        </a>
+      ),
+    )
+  }
+</nav>
+
+<style>
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-stretch: 110%;
+    letter-spacing: 0.08em;
+  }
+
+  .lang-switch > * {
+    display: inline-grid;
+    place-items: center;
+    min-width: 32px;
+    height: 28px;
+    padding: 0 6px;
+    text-decoration: none;
+  }
+
+  .lang-switch > * + * {
+    border-left: 1px solid var(--line);
+  }
+
+  .lang-switch a {
+    color: var(--muted);
+  }
+
+  .lang-switch a:hover {
+    color: var(--ink);
+  }
+
+  .lang-current {
+    color: var(--ink);
+  }
+
+  .lang-switch--large {
+    font-size: 0.9375rem;
+  }
+
+  .lang-switch--large > * {
+    min-width: 56px;
+    height: 44px;
+    border: 1px solid var(--line);
+  }
+
+  .lang-switch--large > * + * {
+    border-left: 0;
+  }
+
+  .lang-switch--large .lang-current {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+  }
+</style>
+
+<script>
+  // Keep the section anchor (e.g. #shipping) when switching language.
+  document.querySelectorAll<HTMLAnchorElement>('[data-lang-link]').forEach((link) => {
+    link.addEventListener('click', () => {
+      if (location.hash && !link.hash) link.hash = location.hash;
+    });
+  });
+</script>

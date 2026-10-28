@@ -1,0 +1,134 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ServiceRow from '../components/ServiceRow.astro';
+import Photo from '../components/Photo.astro';
+import Icon from '../components/Icon.astro';
+import { getProducts } from '../data/products';
+import { photos } from '../data/photos';
+import { site } from '../data/site';
+import { breadcrumbSchema, itemListSchema, webPageSchema } from '../lib/schema';
+import { localizePath, type Lang } from '../i18n';
+import { fill, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].shop;
+const href = (path: string) => localizePath(path, lang);
+const products = getProducts(lang);
+const date = site.shipsBy[lang];
+
+const crumbs = [
+  { name: ui[lang].meta.home, path: href('/') },
+  { name: t.crumb, path: href('/shop') },
+];
+
+const schema = [
+  breadcrumbSchema(crumbs),
+  webPageSchema('CollectionPage', t.heading, href('/shop'), lang),
+  itemListSchema(products.map((p) => ({ name: p.name, path: href(`/product/${p.id}`) }))),
+];
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} schema={schema}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+
+  <section class="container shop-head" aria-labelledby="shop-title">
+    <div>
+      <span class="eyebrow muted">{t.eyebrow}</span>
+      <h1 id="shop-title" class="h1">{t.heading}</h1>
+    </div>
+    <p class="lead">{fill(t.lead, { date })}</p>
+  </section>
+
+  <section class="container shop-grid-wrap" aria-label={t.products}>
+    <p class="shop-count muted">{fill(t.count, { n: products.length })}</p>
+    <div class="shop-grid">
+      {products.map((product, i) => <ProductCard product={product} lang={lang} headingLevel="h2" eager={i < 2} />)}
+    </div>
+  </section>
+
+  <ServiceRow lang={lang} />
+
+  <section class="section shop-story" aria-labelledby="shop-story-title">
+    <div class="container shop-story-grid">
+      <div class="shop-story-copy">
+        <span class="eyebrow muted">{t.storyEyebrow}</span>
+        <h2 id="shop-story-title" class="h2">{t.storyTitle}</h2>
+        <p class="muted">{fill(t.storyText, { date })}</p>
+        <a class="link-arrow" href={href('/policies#pre-order')}>{t.storyLink} <Icon name="arrow-right" size={14} /></a>
+      </div>
+      <figure class="photo-frame shop-story-media">
+        <Photo photo={photos.railFlip} lang={lang} sizes="(max-width: 860px) 100vw, 45vw" />
+      </figure>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .shop-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+    gap: 24px 64px;
+    padding-block: clamp(24px, 4vw, 56px) clamp(32px, 4vw, 56px);
+  }
+
+  .shop-head .h1 {
+    margin-top: 12px;
+  }
+
+  .shop-grid-wrap {
+    padding-bottom: clamp(56px, 8vw, 112px);
+  }
+
+  .shop-count {
+    padding-block: 14px;
+    margin-bottom: 20px;
+    border-block: 1px solid var(--line);
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 32px);
+  }
+
+  .shop-story-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 7vw, 112px);
+  }
+
+  .shop-story-copy {
+    display: grid;
+    justify-items: start;
+    gap: 20px;
+    max-width: 34em;
+  }
+
+  .shop-story-media {
+    aspect-ratio: 4 / 5;
+  }
+
+  @media (max-width: 860px) {
+    .shop-head,
+    .shop-story-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .shop-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

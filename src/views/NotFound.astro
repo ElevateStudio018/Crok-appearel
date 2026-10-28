@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { localizePath, type Lang } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].notFound;
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} noindex>
+  <section class="container not-found">
+    <span class="eyebrow muted">{t.eyebrow}</span>
+    <h1 class="h1">{t.heading}</h1>
+    <p class="lead">{t.lead}</p>
+    <div class="actions">
+      <a class="btn" href={localizePath('/shop', lang)}>{t.shop}</a>
+      <a class="btn btn--outline" href={localizePath('/', lang)}>{t.home}</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    justify-items: start;
+    gap: 20px;
+    padding-block: clamp(56px, 10vw, 160px);
+    min-height: 60vh;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>

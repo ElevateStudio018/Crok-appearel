@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { localizePath, type Lang } from '../i18n';
+import { fill, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].success;
+const href = (path: string) => localizePath(path, lang);
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} noindex>
+  <section class="container thanks">
+    <span class="eyebrow muted">{t.eyebrow}</span>
+    <h1 class="h1">{t.heading}</h1>
+    <p class="lead">{fill(t.lead, { date: site.shipsBy[lang] })}</p>
+    <p class="muted" set:html={fill(t.questions, { contact: href('/contact') })} />
+    <a class="btn" href={href('/shop')}>{t.back}</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .thanks {
+    display: grid;
+    justify-items: start;
+    gap: 20px;
+    padding-block: clamp(56px, 10vw, 160px);
+    min-height: 60vh;
+  }
+</style>
+
+<script>
+  import { clearCart } from '../scripts/cart';
+  if (new URLSearchParams(location.search).has('session_id')) clearCart();
+</script>

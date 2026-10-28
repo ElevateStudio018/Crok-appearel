@@ -1,0 +1,210 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Photo from '../components/Photo.astro';
+import Newsletter from '../components/Newsletter.astro';
+import Icon from '../components/Icon.astro';
+import { photos, photoCredits } from '../data/photos';
+import { site } from '../data/site';
+import { breadcrumbSchema, webPageSchema } from '../lib/schema';
+import { localizePath, type Lang } from '../i18n';
+import { fill, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].about;
+const href = (path: string) => localizePath(path, lang);
+
+const crumbs = [
+  { name: ui[lang].meta.home, path: href('/') },
+  { name: t.crumb, path: href('/about') },
+];
+
+const schema = [breadcrumbSchema(crumbs), webPageSchema('AboutPage', t.crumb, href('/about'), lang)];
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} schema={schema}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+
+  <section class="container about-intro" aria-labelledby="about-title">
+    <span class="eyebrow muted">{t.eyebrow}</span>
+    <h1 id="about-title" class="display" set:html={t.heading} />
+  </section>
+
+  <figure class="container about-hero">
+    <div class="photo-frame about-hero-frame">
+      <Photo photo={photos.powder} lang={lang} widths={[640, 960, 1440, 2000]} sizes="100vw" loading="eager" />
+    </div>
+  </figure>
+
+  <section class="section container about-story" aria-labelledby="story-title">
+    <h2 id="story-title" class="h2">{t.storyTitle}</h2>
+    <div class="prose about-prose">
+      <p class="lead">{t.storyLead}</p>
+      <p>{t.storyText1}</p>
+      <p>{fill(t.storyText2, { city: site.address.city })}</p>
+    </div>
+  </section>
+
+  <section class="section section--dark" aria-labelledby="principles-title">
+    <div class="container">
+      <h2 id="principles-title" class="h2 principles-title">{t.principlesTitle}</h2>
+      <ol role="list" class="principles">
+        {
+          t.principles.map((p, i) => (
+            <li>
+              <span class="principle-no">0{i + 1}</span>
+              <h3 class="h3">{p.title}</h3>
+              <p>{p.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section container about-gallery" aria-label={t.galleryLabel}>
+    <figure class="photo-frame">
+      <Photo photo={photos.railSlide} lang={lang} sizes="(max-width: 760px) 100vw, 50vw" />
+    </figure>
+    <figure class="photo-frame">
+      <Photo photo={photos.citySnow} lang={lang} sizes="(max-width: 760px) 100vw, 50vw" />
+    </figure>
+    <div class="about-cta">
+      <h2 class="h2">{t.ctaTitle}</h2>
+      <a class="btn" href={href('/shop')}>{t.ctaButton} <Icon name="arrow-right" size={16} /></a>
+    </div>
+  </section>
+
+  <section class="container credits" id="credits" aria-labelledby="credits-title">
+    <h2 id="credits-title" class="h3">{t.creditsTitle}</h2>
+    <p class="muted" set:html={t.creditsText} />
+    <ul role="list" class="credit-list">
+      {
+        photoCredits.map((c) => (
+          <li>
+            {c.credit} –{' '}
+            {c.sources.map((s, i) => (
+              <>
+                {i > 0 && ', '}
+                <a href={s} rel="noopener">
+                  {fill(t.photo, { n: i + 1 })}
+                </a>
+              </>
+            ))}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <Newsletter lang={lang} />
+</BaseLayout>
+
+<style>
+  .about-intro {
+    display: grid;
+    gap: 16px;
+    padding-block: clamp(24px, 4vw, 56px) clamp(32px, 4vw, 56px);
+  }
+
+  .about-hero-frame {
+    aspect-ratio: 21 / 9;
+  }
+
+  .about-story {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+    gap: clamp(24px, 6vw, 96px);
+  }
+
+  .about-prose {
+    color: var(--ink-2);
+  }
+
+  .principles-title {
+    margin-bottom: clamp(32px, 5vw, 64px);
+  }
+
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(24px, 4vw, 56px);
+  }
+
+  .principles li {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    padding-top: 24px;
+    border-top: 1px solid #2c2c2c;
+  }
+
+  .principles p {
+    color: var(--on-dark-muted);
+  }
+
+  .principle-no {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--on-dark-muted);
+  }
+
+  .about-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(12px, 2vw, 24px);
+  }
+
+  .about-gallery figure {
+    aspect-ratio: 4 / 5;
+  }
+
+  .about-cta {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: clamp(24px, 4vw, 48px);
+  }
+
+  .about-cta .h2 {
+    max-width: 18em;
+  }
+
+  .credits {
+    display: grid;
+    gap: 12px;
+    padding-bottom: clamp(56px, 8vw, 96px);
+    font-size: 0.875rem;
+  }
+
+  .credit-list {
+    display: grid;
+    gap: 4px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 860px) {
+    .about-story,
+    .principles {
+      grid-template-columns: 1fr;
+    }
+
+    .about-hero-frame {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .about-gallery {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

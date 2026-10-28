@@ -39,6 +39,12 @@
   to = "/checkout/success"
   status = 301
 
+# Swedish 404 page for unknown /sv/ URLs (only used when no file matches).
+[[redirects]]
+  from = "/sv/*"
+  to = "/sv/404"
+  status = 404
+
 [[headers]]
   for = "/_astro/*"
   [headers.values]

@@ -1,0 +1,291 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import ProductCard from '../components/ProductCard.astro';
+import ServiceRow from '../components/ServiceRow.astro';
+import Faq from '../components/Faq.astro';
+import Newsletter from '../components/Newsletter.astro';
+import Icon from '../components/Icon.astro';
+import Photo from '../components/Photo.astro';
+import { getProducts } from '../data/products';
+import { photos } from '../data/photos';
+import { faqs } from '../data/faq';
+import { faqSchema, itemListSchema } from '../lib/schema';
+import { localizePath, type Lang } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].home;
+const href = (path: string) => localizePath(path, lang);
+const products = getProducts(lang);
+const editorial = [photos.railSpray, photos.railFlip, photos.snowfall];
+
+const schema = [
+  itemListSchema(products.map((p) => ({ name: p.name, path: href(`/product/${p.id}`) }))),
+  faqSchema(faqs[lang]),
+];
+---
+
+<BaseLayout lang={lang} title={t.title} rawTitle description={t.description} schema={schema}>
+  <Hero lang={lang} />
+
+  <section class="section" aria-labelledby="collection-title">
+    <div class="container">
+      <header class="section-head">
+        <div>
+          <span class="eyebrow muted">{t.shopEyebrow}</span>
+          <h2 id="collection-title" class="h2">{t.collectionTitle}</h2>
+        </div>
+        <div class="section-head-aside">
+          <p class="muted">{t.collectionText}</p>
+          <a class="link-arrow" href={href('/shop')}>{t.viewCollection} <Icon name="arrow-right" size={14} /></a>
+        </div>
+      </header>
+
+      <div class="product-grid">
+        {products.map((product) => <ProductCard product={product} lang={lang} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark stats" aria-labelledby="stats-title">
+    <div class="container">
+      <header class="stats-head">
+        <span class="eyebrow">{t.statsEyebrow}</span>
+        <h2 id="stats-title" class="h2">{t.statsTitle}</h2>
+      </header>
+      <dl class="stats-grid">
+        {
+          t.stats.map((s) => (
+            <div class="stat">
+              <dt>
+                <span class="stat-label">{s.label}</span>
+                <span class="stat-detail">{s.detail}</span>
+              </dt>
+              <dd class="stat-value">{s.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="section story" aria-labelledby="story-title">
+    <div class="container story-grid">
+      <figure class="story-media photo-frame">
+        <Photo photo={photos.railSlide} lang={lang} sizes="(max-width: 860px) 100vw, 50vw" />
+      </figure>
+      <div class="story-copy">
+        <span class="eyebrow muted">{t.storyEyebrow}</span>
+        <h2 id="story-title" class="h1">{t.storyTitle}</h2>
+        <p class="lead">{t.storyLead}</p>
+        <p class="muted">{t.storyText}</p>
+        <a class="link-arrow" href={href('/about')}>{t.storyLink} <Icon name="arrow-right" size={14} /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark editorial" aria-labelledby="editorial-title">
+    <div class="container">
+      <header class="editorial-head">
+        <h2 id="editorial-title" class="h1" set:html={t.editorialTitle} />
+        <a class="btn btn--light" href={href('/shop')}>{t.editorialCta}</a>
+      </header>
+      <div class="editorial-grid">
+        {
+          editorial.map((photo) => (
+            <figure class="photo-frame">
+              <Photo photo={photo} lang={lang} widths={[400, 640, 960]} sizes="(max-width: 760px) 100vw, 33vw" />
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <ServiceRow lang={lang} />
+  <Faq lang={lang} />
+  <Newsletter lang={lang} />
+</BaseLayout>
+
+<style>
+  .section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px 48px;
+    margin-bottom: clamp(32px, 4vw, 56px);
+  }
+
+  .section-head .h2 {
+    margin-top: 10px;
+  }
+
+  .section-head-aside {
+    display: grid;
+    justify-items: start;
+    gap: 16px;
+    max-width: 30em;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 32px);
+  }
+
+  .stats-head {
+    display: grid;
+    gap: 12px;
+    margin-bottom: clamp(40px, 5vw, 72px);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid #2c2c2c;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 18px;
+    padding: 32px 24px 8px 0;
+  }
+
+  .stat + .stat {
+    padding-left: 24px;
+    border-left: 1px solid #2c2c2c;
+  }
+
+  .stat-value {
+    margin: 0;
+    white-space: nowrap;
+    font-size: clamp(1.75rem, 3.1vw, 3rem);
+    font-weight: 800;
+    font-stretch: 125%;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .stat dt {
+    display: grid;
+    gap: 2px;
+  }
+
+  .stat-label {
+    font-size: 0.8125rem;
+    font-weight: 650;
+    font-stretch: 112%;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .stat-detail {
+    font-size: 0.875rem;
+    color: var(--on-dark-muted);
+  }
+
+  .story-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 7vw, 112px);
+  }
+
+  .story-media {
+    aspect-ratio: 4 / 5;
+  }
+
+  .story-copy {
+    display: grid;
+    justify-items: start;
+    gap: 22px;
+  }
+
+  .editorial-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: clamp(32px, 5vw, 64px);
+  }
+
+  .editorial-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(12px, 1.6vw, 24px);
+    align-items: start;
+  }
+
+  .editorial-grid figure {
+    aspect-ratio: 3 / 4;
+  }
+
+  .editorial-grid figure:nth-child(2) {
+    margin-top: clamp(32px, 6vw, 96px);
+  }
+
+  @media (max-width: 1000px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stat:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .stat:nth-child(n + 3) {
+      border-top: 1px solid #2c2c2c;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .story-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .product-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .editorial-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .editorial-grid figure:nth-child(2) {
+      margin-top: 0;
+    }
+
+    .editorial-grid figure:first-child {
+      grid-column: 1 / -1;
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stat,
+    .stat + .stat {
+      padding: 24px 0 8px;
+      border-left: 0;
+    }
+
+    .stat + .stat {
+      border-top: 1px solid #2c2c2c;
+    }
+  }
+</style>

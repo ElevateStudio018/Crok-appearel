@@ -1,18 +1,29 @@
 ---
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
+import LangSwitch from './LangSwitch.astro';
 import { nav, site } from '../data/site';
+import { localizePath, type Lang } from '../i18n';
+import { ui } from '../i18n/ui';
 
-const path = Astro.url.pathname.replace(/\.html$/, '');
-const isActive = (href: string) => {
-  const base = href.split('#')[0];
-  return base !== '/' && (path === base || path.startsWith(`${base}/`));
+interface Props {
+  lang: Lang;
+  /** Current path without language prefix, e.g. "/shop". */
+  basePath: string;
+}
+
+const { lang, basePath } = Astro.props;
+const t = ui[lang];
+const href = (path: string) => localizePath(path, lang);
+const isActive = (path: string) => {
+  const base = path.split('#')[0];
+  return base !== '/' && (basePath === base || basePath.startsWith(`${base}/`));
 };
 ---
 
 <div class="announcement">
   <div class="container announcement-inner">
-    <p>{site.announcement}</p>
+    <p>{site.announcement[lang]}</p>
   </div>
 </div>
 
@@ -24,22 +35,24 @@ const isActive = (href: string) => {
       aria-controls="mobile-nav"
       aria-expanded="false"
       data-menu-toggle
+      data-label-open={t.header.openMenu}
+      data-label-close={t.header.closeMenu}
     >
-      <span class="visually-hidden" data-menu-label>Open menu</span>
+      <span class="visually-hidden" data-menu-label>{t.header.openMenu}</span>
       <Icon name="menu" size={22} class="icon-open" />
       <Icon name="close" size={22} class="icon-close" />
     </button>
 
-    <a href="/" class="brand" aria-label="CORK – home">
+    <a href={href('/')} class="brand" aria-label={t.meta.homeLabel}>
       <Logo />
     </a>
 
-    <nav class="primary-nav" aria-label="Main">
+    <nav class="primary-nav" aria-label={t.header.main}>
       <ul role="list">
         {
-          nav.map((item) => (
+          nav[lang].map((item) => (
             <li>
-              <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+              <a href={href(item.href)} aria-current={isActive(item.href) ? 'page' : undefined}>
                 {item.label}
               </a>
             </li>
@@ -48,26 +61,39 @@ const isActive = (href: string) => {
       </ul>
     </nav>
 
-    <a href="/cart" class="cart-link" aria-label="Cart">
-      <Icon name="bag" size={22} />
-      <span class="cart-label">Cart</span>
-      <span class="cart-count" data-cart-count data-empty>0</span>
-    </a>
+    <div class="header-actions">
+      <LangSwitch lang={lang} basePath={basePath} />
+      <a
+        href={href('/cart')}
+        class="cart-link"
+        aria-label={t.header.cart}
+        data-label-one={t.header.cartItem}
+        data-label-many={t.header.cartItems}
+      >
+        <Icon name="bag" size={22} />
+        <span class="cart-label">{t.header.cart}</span>
+        <span class="cart-count" data-cart-count data-empty>0</span>
+      </a>
+    </div>
   </div>
 
-  <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile" hidden data-mobile-nav>
+  <nav id="mobile-nav" class="mobile-nav" aria-label={t.header.mobile} hidden data-mobile-nav>
     <div class="container">
-    <ul role="list">
-      <li><a href="/">Home</a></li>
-      {
-        nav.map((item) => (
-          <li>
-            <a href={item.href}>{item.label}</a>
-          </li>
-        ))
-      }
-      <li><a href="/cart">Cart</a></li>
-    </ul>
+      <ul role="list">
+        <li><a href={href('/')}>{t.meta.home}</a></li>
+        {
+          nav[lang].map((item) => (
+            <li>
+              <a href={href(item.href)}>{item.label}</a>
+            </li>
+          ))
+        }
+        <li><a href={href('/cart')}>{t.header.cart}</a></li>
+      </ul>
+      <div class="mobile-lang">
+        <span class="eyebrow muted">{t.header.language}</span>
+        <LangSwitch lang={lang} basePath={basePath} variant="large" />
+      </div>
     </div>
   </nav>
 </header>
@@ -99,7 +125,7 @@ const isActive = (href: string) => {
 
   .header-inner {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     gap: 24px;
     height: var(--header-h);
@@ -108,7 +134,15 @@ const isActive = (href: string) => {
   .brand {
     display: block;
     height: 24px;
+    width: max-content;
     color: var(--ink);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: clamp(14px, 2vw, 28px);
   }
 
   .primary-nav ul {
@@ -207,10 +241,18 @@ const isActive = (href: string) => {
 
   .mobile-nav ul {
     display: grid;
-    padding-block: 8px 24px;
+    padding-block: 8px 0;
   }
 
-  .mobile-nav a {
+  .mobile-lang {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 20px 28px;
+  }
+
+  .mobile-nav ul a {
     display: block;
     padding: 14px 0;
     border-bottom: 1px solid var(--line);
@@ -223,8 +265,11 @@ const isActive = (href: string) => {
 
   @media (max-width: 860px) {
     .header-inner {
-      grid-template-columns: 1fr auto 1fr;
       gap: 8px;
+    }
+
+    .brand {
+      grid-column: 2;
     }
 
     .menu-toggle {
@@ -237,10 +282,6 @@ const isActive = (href: string) => {
 
     .brand {
       height: 21px;
-    }
-
-    .cart-link {
-      justify-self: end;
     }
 
     .cart-label {
@@ -258,7 +299,7 @@ const isActive = (href: string) => {
     if (!toggle || !panel) return;
     toggle.setAttribute('aria-expanded', String(open));
     panel.hidden = !open;
-    if (label) label.textContent = open ? 'Close menu' : 'Open menu';
+    if (label) label.textContent = (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? '';
   };
 
   toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
