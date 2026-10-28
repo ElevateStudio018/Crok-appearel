@@ -1,0 +1,91 @@
+---
+import '../styles/global.css';
+import fontUrl from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+import { organizationSchema, websiteSchema } from '../lib/schema';
+
+interface Props {
+  /** Page title without the brand suffix. */
+  title: string;
+  description: string;
+  /** Use the title as-is (no " | CORK" suffix). */
+  rawTitle?: boolean;
+  /** Absolute or root-relative path to a 1200×630 share image. */
+  ogImage?: string;
+  ogImageAlt?: string;
+  ogType?: 'website' | 'product' | 'article';
+  noindex?: boolean;
+  schema?: Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  rawTitle = false,
+  ogImage = '/og/cork-default.jpg',
+  ogImageAlt = 'CORK – independent freeski outerwear from Sweden',
+  ogType = 'website',
+  noindex = false,
+  schema = [],
+} = Astro.props;
+
+const fullTitle = rawTitle ? title : `${title} | ${site.name}`;
+const pathname = Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/') || '/';
+const canonical = new URL(pathname, site.url).toString();
+const ogImageUrl = new URL(ogImage, site.url).toString();
+const jsonLd = [organizationSchema(), websiteSchema(), ...schema];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonical} />}
+
+    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={site.locale} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#0e0e0e" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <slot name="head" />
+
+    {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      import { initCartBadge } from '../scripts/cart';
+      initCartBadge();
+    </script>
+  </body>
+</html>

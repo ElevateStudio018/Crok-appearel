@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" description="The page you are looking for does not exist." noindex>
+  <section class="container not-found">
+    <span class="eyebrow muted">Error 404</span>
+    <h1 class="h1">Off the rail.</h1>
+    <p class="lead">We could not find that page. It may have moved, or the link is wrong.</p>
+    <div class="actions">
+      <a class="btn" href="/shop">Shop CORK 3</a>
+      <a class="btn btn--outline" href="/">Go to the homepage</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    justify-items: start;
+    gap: 20px;
+    padding-block: clamp(56px, 10vw, 160px);
+    min-height: 60vh;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>

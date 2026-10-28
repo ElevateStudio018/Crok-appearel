@@ -1,0 +1,55 @@
+---
+import { faqs } from '../data/faq';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'Questions' } = Astro.props;
+---
+
+<section class="section faq" aria-labelledby="faq-title">
+  <div class="container faq-grid">
+    <div>
+      <span class="eyebrow muted">Help</span>
+      <h2 id="faq-title" class="h2 faq-title">{title}</h2>
+      <p class="muted faq-more">
+        Still unsure? <a href="/contact">Contact us</a> or read the full <a href="/policies">policies</a>.
+      </p>
+    </div>
+    <div class="accordion">
+      {
+        faqs.map((f, i) => (
+          <details open={i === 0}>
+            <summary>{f.q}</summary>
+            <div class="accordion-body">
+              <p>{f.a}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: clamp(32px, 6vw, 96px);
+  }
+
+  .faq-title {
+    margin-top: 12px;
+  }
+
+  .faq-more {
+    margin-top: 20px;
+  }
+
+  @media (max-width: 860px) {
+    .faq-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
+---
+
+<BaseLayout title="Thank you for your order" description="Your CORK order is confirmed." noindex>
+  <section class="container thanks">
+    <span class="eyebrow muted">Order confirmed</span>
+    <h1 class="h1">Thank you.</h1>
+    <p class="lead">
+      Your order is in. A confirmation with your receipt is on its way to your inbox. Pre-order pieces ship before {site.shipsBy}, and we will email you tracking as soon as yours is on the way.
+    </p>
+    <p class="muted">Questions about your order? <a href="/contact">Contact us</a> and have your order number ready.</p>
+    <a class="btn" href="/shop">Back to the shop</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .thanks {
+    display: grid;
+    justify-items: start;
+    gap: 20px;
+    padding-block: clamp(56px, 10vw, 160px);
+    min-height: 60vh;
+  }
+</style>
+
+<script>
+  import { clearCart } from '../../scripts/cart';
+  if (new URLSearchParams(location.search).has('session_id')) clearCart();
+</script>

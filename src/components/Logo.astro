@@ -1,0 +1,19 @@
+---
+import LogoSvg from '../assets/brand/cork-logo.svg';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<LogoSvg class:list={['logo', className]} aria-hidden="true" focusable="false" />
+
+<style>
+  .logo {
+    width: auto;
+    height: 100%;
+    color: currentColor;
+  }
+</style>

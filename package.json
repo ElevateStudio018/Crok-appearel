@@ -1,0 +1,22 @@
+{
+  "name": "cork-apparel",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CORK — independent freeski outerwear from Sweden. Storefront for wearcork.shop.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/archivo": "^5.3.0",
+    "astro": "^6.4.8"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "typescript": "^6.0.3"
+  }
+}

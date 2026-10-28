@@ -1,0 +1,27 @@
+---
+import { Picture } from 'astro:assets';
+import type { Photo } from '../data/photos';
+
+interface Props {
+  photo: Photo;
+  sizes: string;
+  widths?: number[];
+  loading?: 'lazy' | 'eager';
+  class?: string;
+  /** Decorative use: empty alt text. */
+  decorative?: boolean;
+}
+
+const { photo, sizes, widths = [480, 720, 960, 1280], loading = 'lazy', class: className, decorative = false } = Astro.props;
+---
+
+<Picture
+  src={photo.src}
+  alt={decorative ? '' : photo.alt}
+  formats={['avif', 'webp']}
+  widths={widths}
+  sizes={sizes}
+  quality={68}
+  loading={loading}
+  class={className}
+/>

@@ -1,0 +1,176 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { footerNav, site } from '../data/site';
+
+const socials = (
+  [
+    ['instagram', 'Instagram', site.social.instagram],
+    ['youtube', 'YouTube', site.social.youtube],
+    ['tiktok', 'TikTok', site.social.tiktok],
+  ] as const
+).filter(([, , href]) => href);
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="/" class="footer-logo" aria-label="CORK – home"><Logo /></a>
+        <p>
+          Independent freeski outerwear from {site.address.city}, Sweden. Made in small runs for nights on the rail and days in the city.
+        </p>
+        {
+          socials.length > 0 && (
+            <ul role="list" class="socials">
+              {socials.map(([icon, label, href]) => (
+                <li>
+                  <a href={href} target="_blank" rel="noopener" aria-label={label}>
+                    <Icon name={icon} size={20} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+
+      {
+        footerNav.map((group) => (
+          <nav class="footer-col" aria-label={group.title}>
+            <h2 class="footer-heading">{group.title}</h2>
+            <ul role="list">
+              {group.links.map((link) => (
+                <li>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+
+      <div class="footer-col">
+        <h2 class="footer-heading">Address</h2>
+        <address>
+          {site.name}<br />
+          {site.address.street}<br />
+          {site.address.city}, {site.address.country}
+        </address>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© {year} {site.name}. All rights reserved.</p>
+      <p>All prices in SEK · Secure checkout by Stripe</p>
+      <p>Photography: <a href="/about#credits">Pexels contributors</a></p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--dark);
+    color: var(--on-dark);
+    padding-block: clamp(56px, 8vw, 96px) 32px;
+    font-size: 0.9375rem;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: minmax(260px, 1.6fr) repeat(4, minmax(140px, 1fr));
+    gap: 40px;
+  }
+
+  .footer-logo {
+    display: block;
+    height: 30px;
+    width: max-content;
+    color: var(--on-dark);
+  }
+
+  .footer-brand p {
+    margin-top: 20px;
+    max-width: 30em;
+    color: var(--on-dark-muted);
+  }
+
+  .socials {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .socials a {
+    color: var(--on-dark-muted);
+  }
+
+  .socials a:hover {
+    color: var(--on-dark);
+  }
+
+  .footer-heading {
+    margin-bottom: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-stretch: 110%;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--on-dark);
+  }
+
+  .footer-col ul {
+    display: grid;
+    gap: 10px;
+  }
+
+  .footer-col a {
+    color: var(--on-dark-muted);
+    text-decoration: none;
+  }
+
+  .footer-col a:hover {
+    color: var(--on-dark);
+  }
+
+  address {
+    font-style: normal;
+    color: var(--on-dark-muted);
+    line-height: 1.7;
+  }
+
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    margin-top: clamp(48px, 7vw, 88px);
+    padding-top: 24px;
+    border-top: 1px solid #2a2a2a;
+    font-size: 0.8125rem;
+    color: var(--on-dark-muted);
+  }
+
+  .footer-bottom a {
+    color: var(--on-dark);
+  }
+
+  @media (max-width: 1080px) {
+    .footer-top {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .footer-brand {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .footer-top {
+      grid-template-columns: 1fr 1fr;
+      gap: 36px 24px;
+    }
+  }
+</style>

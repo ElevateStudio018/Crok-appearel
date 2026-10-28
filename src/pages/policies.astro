@@ -1,0 +1,195 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { site } from '../data/site';
+import { breadcrumbSchema } from '../lib/schema';
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Policies', path: '/policies' },
+];
+
+const sections = [
+  {
+    id: 'pre-order',
+    title: 'Pre-orders',
+    body: [
+      'Pre-order pieces are made in small numbers after the drop closes. You pay when you place your pre-order.',
+      `The estimated delivery time is shown on the product page – CORK 3 pre-orders ship before ${site.shipsBy}. If production is delayed, we email you with a new date.`,
+      'You can cancel a pre-order for a full refund at any time before it ships. Email us with your order number.',
+      'If we cannot produce your piece, you get a full refund.',
+    ],
+  },
+  {
+    id: 'shipping',
+    title: 'Shipping',
+    body: [
+      `We ship from ${site.address.city}, Sweden. Shipping cost and delivery time are shown at checkout.`,
+      'You get an email with tracking when your order ships.',
+    ],
+  },
+  {
+    id: 'returns',
+    title: 'Returns & right of withdrawal',
+    body: [
+      'You have 14 days to withdraw from your purchase from the day you receive it, in line with the Swedish Distance Contracts Act (distansavtalslagen).',
+      'Items must be unused, unwashed and in original condition with tags. Return shipping is paid by the customer unless the item is faulty.',
+      'Refunds are made to the original payment method within 14 days of us receiving the return.',
+    ],
+  },
+  {
+    id: 'complaints',
+    title: 'Complaints',
+    body: [
+      'Faulty items are covered by the Swedish Consumer Sales Act (konsumentköplagen) for three years. Contact us with photos and your order number.',
+      'If we cannot agree, you can turn to the National Board for Consumer Disputes (Allmänna reklamationsnämnden, arn.se).',
+    ],
+  },
+  {
+    id: 'privacy',
+    title: 'Privacy',
+    body: [
+      'We only collect what is needed to deliver your order: name, email, address and order details. Payments are handled by our payment provider, Stripe – we never see your card details.',
+      'If you sign up for the mailing list, we store your email address only to send you news about CORK releases. You can unsubscribe at any time.',
+      'Your data is processed under the GDPR and never sold. You can ask us to see, correct or delete your data at any time.',
+    ],
+  },
+  {
+    id: 'terms',
+    title: 'Terms of purchase',
+    body: ['All prices are in SEK. A purchase is binding once payment is confirmed.', 'These terms follow Swedish law.'],
+  },
+];
+---
+
+<BaseLayout
+  title="Policies – Pre-orders, Shipping, Returns & Privacy"
+  description="CORK terms for pre-orders, shipping from Uppsala, 14-day returns and right of withdrawal, complaints, privacy and terms of purchase."
+  schema={[breadcrumbSchema(crumbs)]}
+>
+  <Breadcrumbs items={crumbs} />
+
+  <div class="container policies">
+    <header class="policies-head">
+      <span class="eyebrow muted">Help</span>
+      <h1 class="h1">Policies</h1>
+      <p class="lead">Everything you need to know about ordering from CORK.</p>
+    </header>
+
+    <nav class="policies-toc" aria-label="On this page">
+      <p class="eyebrow muted">On this page</p>
+      <ul role="list">
+        {
+          sections.map((s) => (
+            <li>
+              <a href={`#${s.id}`}>{s.title}</a>
+            </li>
+          ))
+        }
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="policies-body">
+      {
+        sections.map((s) => (
+          <section id={s.id} aria-labelledby={`${s.id}-title`}>
+            <h2 id={`${s.id}-title`} class="h3">
+              {s.title}
+            </h2>
+            {s.body.map((p) => (
+              <p>{p}</p>
+            ))}
+          </section>
+        ))
+      }
+      <section id="contact" aria-labelledby="contact-title">
+        <h2 id="contact-title" class="h3">Contact</h2>
+        <address>
+          {site.name}<br />
+          {site.address.street}<br />
+          {site.address.city}, {site.address.country}
+        </address>
+        <p><a href="/contact">Send us a message</a></p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .policies {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 32px clamp(32px, 6vw, 96px);
+    padding-block: clamp(24px, 4vw, 56px) clamp(64px, 9vw, 128px);
+  }
+
+  .policies-head {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 16px;
+    padding-bottom: clamp(16px, 3vw, 32px);
+  }
+
+  .policies-toc {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    align-self: start;
+  }
+
+  .policies-toc ul {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+    padding-left: 16px;
+    border-left: 1px solid var(--line);
+  }
+
+  .policies-toc a {
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .policies-toc a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  .policies-body {
+    max-width: 44em;
+  }
+
+  .policies-body section {
+    padding-block: 28px;
+    border-top: 1px solid var(--line);
+  }
+
+  .policies-body section:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .policies-body h2 {
+    margin-bottom: 14px;
+  }
+
+  .policies-body p,
+  .policies-body address {
+    color: var(--ink-2);
+    font-style: normal;
+  }
+
+  .policies-body p + p {
+    margin-top: 0.8em;
+  }
+
+  @media (max-width: 860px) {
+    .policies {
+      grid-template-columns: 1fr;
+    }
+
+    .policies-toc {
+      position: static;
+    }
+  }
+</style>

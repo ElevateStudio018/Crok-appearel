@@ -1,0 +1,76 @@
+# CORK – wearcork.shop
+
+Storefront for CORK, independent freeski outerwear from Uppsala, Sweden.
+Built with [Astro](https://astro.build) as a static site: every page is pre-rendered HTML, which is fast and easy for search engines to crawl.
+
+## Getting started
+
+```bash
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # production build into dist/
+npm run check    # type check
+```
+
+Requires Node 22.12 or newer.
+
+## Project structure
+
+```
+src/
+  data/
+    site.ts        Brand info, address, navigation, social links, announcement bar
+    catalog.ts     Prices, sizes, pre-order status (also used by the checkout function)
+    products.ts    Product copy, specs, size guides, gallery images, SEO titles
+    photos.ts      Editorial photos + Pexels credits
+    faq.ts         FAQ (shown on the home page and as FAQPage schema)
+  pages/           One file per URL (/, /shop, /product/[id], /about, /contact, /policies, /cart …)
+  components/      Header, Footer, Hero, ProductCard, Newsletter …
+  layouts/         BaseLayout – <head>, meta tags, Open Graph, JSON-LD
+  lib/schema.ts    Structured data (Organization, Product, Breadcrumb, FAQ …)
+  scripts/         Cart (localStorage) and form handling in the browser
+  assets/          Product photos, Pexels photos (black and white), logo/mascot as SVG
+netlify/functions/checkout.mts   Creates the Stripe Checkout session
+public/og/       Share images (1200×630) – regenerate with node scripts/generate-og.cjs
+```
+
+### Common changes
+
+| What | Where |
+| --- | --- |
+| Price, sold out, pre-order | `src/data/catalog.ts` (then regenerate `public/og/` if the price changes) |
+| Product copy, specs, size guide | `src/data/products.ts` |
+| Announcement bar, ship-by date, address | `src/data/site.ts` |
+| Instagram/YouTube/TikTok links | `site.social` in `src/data/site.ts` (empty values are hidden) |
+| New product | Add it to `catalog.ts` + `products.ts` and put its images in `src/assets/products/` |
+
+## Deploying (Netlify)
+
+The site is set up for Netlify (`netlify.toml`): static hosting, forms, the checkout function, redirects and cache headers.
+
+1. Create a new site in Netlify from this repo. Build command and publish folder are read from `netlify.toml`.
+2. **Stripe:** under *Site configuration → Environment variables*, add
+   - `STRIPE_SECRET_KEY` – your Stripe secret key (`sk_live_…`)
+   - `STRIPE_SHIPPING_RATE_ID` (optional) – a Stripe shipping rate (`shr_…`) to charge shipping
+   Without a key the cart shows "Checkout is not open yet".
+3. **Forms:** enable *Forms* in Netlify. The contact form (`contact`) and the mailing list (`newsletter`) are detected automatically. Set up email notifications under *Forms → Notifications*.
+4. **Domain:** point `wearcork.shop` at Netlify.
+5. Submit `https://wearcork.shop/sitemap-index.xml` in Google Search Console.
+
+Old URLs (`/team`, `/videos`, `/backstage`, `/mailing-list`, `/info`) are 301-redirected to the matching new pages.
+
+## SEO
+
+- Unique `<title>`, meta description and canonical URL on every page
+- Open Graph and Twitter cards with dedicated share images
+- JSON-LD: Organization, WebSite, Product (price, `PreOrder`, return policy), BreadcrumbList, ItemList, FAQPage
+- `sitemap-index.xml` + `robots.txt`; cart and checkout are `noindex`
+- Images served as AVIF/WebP in responsive sizes, self-hosted font (no Google Fonts calls)
+
+## Images
+
+- **Product photos** are CORK's own photos from the previous site.
+- **Editorial photos** come from [Pexels](https://www.pexels.com/license/) (free to use commercially, no attribution required). They are converted to black and white and credited on `/about#credits`. Photographers: Jean-Daniel Francoeur, Ahmet Yüksek, Federico Tomasoni, Luca Severin.
+- The previous site's AI-generated images (fisheye skier, the "cork workshop") have been removed.
+
+When CORK has its own lookbook photos, replace the files in `src/assets/photos/` (or point `photos.ts` at new files) – the layout stays the same.
