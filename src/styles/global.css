@@ -93,6 +93,14 @@ figure {
   margin: 0;
 }
 
+/* Long Swedish compounds ("förbeställningen") may break on very narrow screens
+   instead of pushing the layout sideways. */
+h1,
+h2,
+h3 {
+  overflow-wrap: anywhere;
+}
+
 ul[role='list'],
 ol[role='list'] {
   list-style: none;
@@ -545,11 +553,6 @@ textarea.input {
 }
 
 /* ---------- Media ---------- */
-
-/* Black and white treatment for colour originals (see photos.ts `mono`). */
-img.is-mono {
-  filter: grayscale(1) contrast(1.08);
-}
 
 .media-cover {
   width: 100%;

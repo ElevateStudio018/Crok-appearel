@@ -39,7 +39,7 @@ const schema = [
   <Breadcrumbs lang={lang} items={crumbs} />
 
   <section class="container shop-head" aria-labelledby="shop-title">
-    <div>
+    <div class="shop-head-title">
       <span class="eyebrow muted">{t.eyebrow}</span>
       <h1 id="shop-title" class="h1">{t.heading}</h1>
     </div>
@@ -81,8 +81,14 @@ const schema = [
     padding-block: clamp(24px, 4vw, 56px) clamp(32px, 4vw, 56px);
   }
 
+  /* Sized to the column, so "CORK 3-kollektionen" fits on one line per word. */
+  .shop-head-title {
+    container-type: inline-size;
+  }
+
   .shop-head .h1 {
     margin-top: 12px;
+    font-size: min(4.25rem, 9.4cqi);
   }
 
   .shop-grid-wrap {

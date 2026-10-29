@@ -27,7 +27,7 @@ To update it:
 1. `npm run preview:githack` and commit `preview/`
 2. `npm run preview:pin` and commit again
 
-githack passes images, videos and fonts on to raw.githubusercontent.com, which rate-limits shared connections such as mobile networks, so photos can go missing. The second pass points those files at jsDelivr, pinned to the commit from step 1. Swap the branch name in the URL for other branches. Right after a push githack can serve a cached copy of a page for a few minutes; put the commit hash in place of the branch name to see the newest version straight away. The preview is `noindex`, and checkout and forms only work on Netlify.
+githack passes images, videos and fonts on to raw.githubusercontent.com, which rate-limits shared connections such as mobile networks, and it can serve a cached page from an older build whose CSS and images are gone. The second pass points CSS, scripts, images, videos and fonts at jsDelivr, pinned to the commit from step 1, so they never go missing. Swap the branch name in the URL for other branches. Right after a push githack can serve a cached copy of a page for a few minutes; put the commit hash in place of the branch name to see the newest version straight away. The preview is `noindex`, and checkout and forms only work on Netlify.
 
 ## Languages (EN / SV)
 
@@ -45,7 +45,8 @@ src/
     site.ts        Brand info, address, navigation, social links, announcement bar
     catalog.ts     Prices, sizes, pre-order status (also used by the checkout function)
     products.ts    Product copy (EN/SV), specs, size guides, gallery images, SEO titles
-    photos.ts      Editorial photos + Pexels credits (`mono: true` shows a photo in black and white)
+    photos.ts      Editorial photos + Pexels credits
+    team.ts        Team riders shown on /team (name, optional Instagram handle)
     videos.ts      Video clips on /videos (files in public/videos/)
     faq.ts         FAQ (shown on the home page and as FAQPage schema)
     policies.ts    Pre-order, shipping, returns, privacy and purchase terms
@@ -56,7 +57,7 @@ src/
   layouts/         BaseLayout – <head>, meta tags, Open Graph, JSON-LD
   lib/schema.ts    Structured data (Organization, Product, Breadcrumb, FAQ …)
   scripts/         Cart (localStorage) and form handling in the browser
-  assets/          Product photos, Pexels photos (black and white), logo/mascot as SVG
+  assets/          Product photos and Pexels photos (all black and white), logo/mascot as SVG
 netlify/functions/checkout.mts   Creates the Stripe Checkout session
 public/og/       Share images (1200×630, Swedish in og/sv/) – regenerate with node scripts/generate-og.cjs
 scripts/build-preview.mjs        Writes preview/ for githack
@@ -73,7 +74,8 @@ preview/         Generated githack preview – do not edit by hand
 | Buttons, headings and other UI text | `src/i18n/ui.ts` |
 | Instagram/YouTube/TikTok links | `site.social` in `src/data/site.ts` (empty values are hidden) |
 | Menu and footer links | `nav` and `footerNav` in `src/data/site.ts` |
-| Swap a photo, or colour ↔ black and white | `src/data/photos.ts` (put the colour original in `src/assets/photos/`) |
+| Swap a photo | `src/data/photos.ts` (put a black and white JPG in `src/assets/photos/`) |
+| Add or remove a team rider, add their Instagram | `src/data/team.ts` |
 | Add or replace a video | `src/data/videos.ts` + an H.264 MP4 and a poster in `public/videos/` |
 | New product | Add it to `catalog.ts` + `products.ts` and put its images in `src/assets/products/` |
 
@@ -103,9 +105,11 @@ The menu follows the original site: Videos, Shop, Team, About, Backstage, Mailin
 
 ## Images
 
+Every image on the site is black and white. The files themselves are stored in black and white, so share images, Google results and the cart show them that way too. The colour originals are in the git history.
+
 - **Product photos** are CORK's own photos from the previous site.
-- **Editorial photos** are the four CORK picked in the image picker – Pexels 15751550, 15897059, 25400943 and 15751546 – all shown in black and white. They come from [Pexels](https://www.pexels.com/license/) (free to use commercially, no attribution required). The files are the colour originals; `mono` in `photos.ts` decides whether a photo is shown in black and white. All photographers are credited on `/about#credits`.
-- **Videos** on `/videos` are Pexels clips (Alex Moliski, Rob Bouchat), re-encoded to 720p without sound (about 1–2 MB each) and credited on every clip.
+- **Editorial photos** are the four CORK picked in the image picker – Pexels 15751550, 15897059, 25400943 and 15751546. They come from [Pexels](https://www.pexels.com/license/) (free to use commercially, no attribution required). All photographers are credited on `/about#credits`.
+- **Videos** on `/videos` are Pexels clips (Alex Moliski, Rob Bouchat), re-encoded to 720p in black and white without sound (about 1–2 MB each) and credited on every clip.
 - The previous site's AI-generated images (fisheye skier, the "cork workshop") have been removed.
 
 When CORK has its own lookbook photos, replace the files in `src/assets/photos/` (or point `photos.ts` at new files) – the layout stays the same.

@@ -54,7 +54,7 @@ const pages = Object.values(copy).flatMap((c) => [
       .logo { height: 44px; color: #f4f3ef; }
       .title { font-size: 48px; margin-top: 18px; }
       .sub { margin-top: 22px; font-size: 22px; color: #c9c9c4; line-height: 1.4; }
-      .img { background: url(file://${R}/src/assets/photos/night-rail-slide.jpg) 45% 50% / cover; filter: grayscale(1) contrast(1.08); }
+      .img { background: url(file://${R}/src/assets/photos/night-rail-slide.jpg) 45% 50% / cover; }
     </style>
     <div class="copy"><div class="logo">${logo}</div>
       <div><p class="eyebrow">${c.preorderEyebrow}</p><h1 class="title">Independent by nature.</h1>

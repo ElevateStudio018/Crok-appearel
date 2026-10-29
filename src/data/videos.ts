@@ -22,8 +22,8 @@ export const clips: Clip[] = [
     pexelsId: '31940035',
     title: { en: 'Air over the pines', sv: 'Luft över tallarna' },
     description: {
-      en: 'A big spring kicker, blue sky and a clean trick above the tree line.',
-      sv: 'En stor vårkicker, blå himmel och ett rent trick ovanför trädtopparna.',
+      en: 'A big spring kicker, a clear sky and a clean trick above the tree line.',
+      sv: 'En stor vårkicker, klar himmel och ett rent trick ovanför trädtopparna.',
     },
     credit: 'Alex Moliski',
     location: 'Brighton, Utah',
@@ -85,17 +85,17 @@ export const clips: Clip[] = [
     pexelsId: '35752223',
     title: { en: 'Ridge slash', sv: 'Slash på krönet' },
     description: {
-      en: 'A slash across wind-packed snow under a deep blue sky.',
-      sv: 'En slash över vindpackad snö under en djupblå himmel.',
+      en: 'A slash across wind-packed snow under a clear sky.',
+      sv: 'En slash över vindpackad snö under en klar himmel.',
     },
     credit: 'Rob Bouchat',
     duration: 6,
     orientation: 'landscape',
   },
   {
-    slug: 'carving-in-yellow',
+    slug: 'long-carves',
     pexelsId: '30598012',
-    title: { en: 'Carving in yellow', sv: 'Carving i gult' },
+    title: { en: 'Long carves', sv: 'Långa svängar' },
     description: {
       en: 'Long turns on a sunny piste, filmed from below.',
       sv: 'Långa svängar i en solig backe, filmat nerifrån.',

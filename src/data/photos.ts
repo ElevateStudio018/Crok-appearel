@@ -12,18 +12,15 @@ export interface Photo {
   credit: string;
   /** Pexels photo id – matches the numbers in the image picker. */
   pexelsId: string;
-  /** Shown in black and white (CSS filter on the colour original) when true. */
-  mono: boolean;
 }
 
-// Editorial photography licensed from Pexels (https://www.pexels.com/license/).
-// Files are the colour originals; `mono` switches a photo to black and white.
-// Credits are listed on /about#credits.
+// Editorial photography licensed from Pexels (https://www.pexels.com/license/),
+// stored in black and white like every image on the site. Credits are listed on /about#credits.
 const jdf = 'Jean-Daniel Francoeur';
 
 export const photos = {
-  // The photos CORK picked in the image picker, all shown in black and white:
-  // 15751550, 15897059 and 25400943, plus 15751546 from the first round.
+  // The photos CORK picked in the image picker: 15751550, 15897059 and 25400943,
+  // plus 15751546 from the first round.
   railSlide: {
     src: nightRailSlide,
     alt: {
@@ -32,7 +29,6 @@ export const photos = {
     },
     credit: jdf,
     pexelsId: '15751550',
-    mono: true,
   },
   streetRail: {
     src: streetRailCrowd,
@@ -42,7 +38,6 @@ export const photos = {
     },
     credit: 'Frank Cone',
     pexelsId: '15897059',
-    mono: true,
   },
   swissTrick: {
     src: swissTrick,
@@ -52,7 +47,6 @@ export const photos = {
     },
     credit: 'Thomas Forsberg',
     pexelsId: '25400943',
-    mono: true,
   },
   railJam: {
     src: nightRailJam,
@@ -62,7 +56,6 @@ export const photos = {
     },
     credit: jdf,
     pexelsId: '15751546',
-    mono: true,
   },
 } satisfies Record<string, Photo>;
 

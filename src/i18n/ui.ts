@@ -279,8 +279,7 @@ const en = {
   team: {
     crumb: 'Team',
     title: 'Team – The Riders, Filmers and Makers Behind CORK',
-    description:
-      'CORK is a small circle of friends from Sweden who ski, film and make clothes. Meet the crew and apply to ride or film with CORK.',
+    description: 'Meet the CORK team riders: {riders}. Apply to ride or film with CORK.',
     eyebrow: 'Team',
     heading: 'The crew.',
     lead: 'CORK started in Sweden as a small circle of friends who skied, filmed and made their own clothes. Three crafts, one crew.',
@@ -299,8 +298,11 @@ const en = {
         text: 'Design, samples and the details – from the drawstring waist on the pants to the mascot print on the puff.',
       },
     ],
-    profilesTitle: 'Team profiles',
-    profilesText: 'Full rider and filmer profiles are on the way. Want to be one of them?',
+    ridersEyebrow: 'Team riders',
+    ridersTitle: 'The riders.',
+    ridersText: 'The skiers who ride for CORK.',
+    riderRole: 'Rider',
+    ridersApply: 'Want to ride with CORK?',
     applyEyebrow: 'Apply',
     applyTitle: 'Ride or film with CORK',
     applyLead:
@@ -723,8 +725,7 @@ const sv: UI = {
   team: {
     crumb: 'Team',
     title: 'Team – Åkarna, filmarna och skaparna bakom CORK',
-    description:
-      'CORK är ett litet gäng vänner från Sverige som åker skidor, filmar och gör kläder. Möt gänget och ansök om att åka eller filma med CORK.',
+    description: 'Möt CORKs teamåkare: {riders}. Ansök om att åka eller filma med CORK.',
     eyebrow: 'Team',
     heading: 'Gänget.',
     lead: 'CORK startade i Sverige som ett litet gäng vänner som åkte skidor, filmade och gjorde sina egna kläder. Tre hantverk, ett gäng.',
@@ -743,8 +744,11 @@ const sv: UI = {
         text: 'Design, prover och detaljerna – från dragskon i midjan på byxorna till maskottrycket på jackan.',
       },
     ],
-    profilesTitle: 'Teamprofiler',
-    profilesText: 'Fullständiga profiler på åkare och filmare är på väg. Vill du bli en av dem?',
+    ridersEyebrow: 'Teamåkare',
+    ridersTitle: 'Åkarna.',
+    ridersText: 'Skidåkarna som åker för CORK.',
+    riderRole: 'Åkare',
+    ridersApply: 'Vill du åka med CORK?',
     applyEyebrow: 'Ansök',
     applyTitle: 'Åk eller filma med CORK',
     applyLead:

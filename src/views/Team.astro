@@ -4,7 +4,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Photo from '../components/Photo.astro';
 import { photos } from '../data/photos';
-import { breadcrumbSchema, webPageSchema } from '../lib/schema';
+import { instagramUrl, riders } from '../data/team';
+import { breadcrumbSchema, teamSchema, webPageSchema } from '../lib/schema';
 import { localizePath, type Lang } from '../i18n';
 import { fill, ui } from '../i18n/ui';
 import puffLabel from '../assets/products/cork-3-puff-label.jpg';
@@ -22,12 +23,18 @@ const crumbs = [
   { name: ui[lang].meta.home, path: href('/') },
   { name: t.crumb, path: href('/team') },
 ];
-const schema = [breadcrumbSchema(crumbs), webPageSchema('AboutPage', t.heading, href('/team'), lang)];
+const riderNames = new Intl.ListFormat(lang === 'sv' ? 'sv' : 'en-GB', { type: 'conjunction' }).format(riders.map((r) => r.name));
+const description = fill(t.description, { riders: riderNames });
+const schema = [
+  breadcrumbSchema(crumbs),
+  webPageSchema('AboutPage', t.heading, href('/team'), lang),
+  teamSchema(riders, t.riderRole),
+];
 
 const rolePhotos = [photos.railSlide, photos.swissTrick];
 ---
 
-<BaseLayout lang={lang} title={t.title} description={t.description} schema={schema}>
+<BaseLayout lang={lang} title={t.title} description={description} schema={schema}>
   <Breadcrumbs lang={lang} items={crumbs} />
 
   <section class="container team-hero" aria-labelledby="team-title">
@@ -40,6 +47,34 @@ const rolePhotos = [photos.railSlide, photos.swissTrick];
     <figure class="photo-frame team-hero-media">
       <Photo photo={photos.streetRail} lang={lang} widths={[640, 960, 1440, 1920]} sizes="(max-width: 860px) 100vw, 55vw" loading="eager" />
     </figure>
+  </section>
+
+  <section class="section container riders" aria-labelledby="riders-title">
+    <header class="riders-head">
+      <span class="eyebrow muted">{t.ridersEyebrow}</span>
+      <h2 id="riders-title" class="h1">{t.ridersTitle}</h2>
+      <p class="muted">{t.ridersText}</p>
+    </header>
+    <ol role="list" class="rider-list">
+      {
+        riders.map((rider, i) => (
+          <li class="rider">
+            <span class="rider-no">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="rider-name">{rider.name}</h3>
+            {rider.instagram ? (
+              <a class="rider-role" href={instagramUrl(rider.instagram)} rel="noopener" target="_blank">
+                @{rider.instagram}
+              </a>
+            ) : (
+              <span class="rider-role">{t.riderRole}</span>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+    <p class="riders-apply">
+      {t.ridersApply} <a href="#apply">{t.applyTitle}</a>
+    </p>
   </section>
 
   <section class="section section--dark" aria-labelledby="roles-title">
@@ -65,12 +100,6 @@ const rolePhotos = [photos.railSlide, photos.swissTrick];
     </div>
   </section>
 
-  <section class="section container" aria-labelledby="profiles-title">
-    <header class="profiles-head">
-      <h2 id="profiles-title" class="h2">{t.profilesTitle}</h2>
-      <p class="muted">{t.profilesText} <a href="#apply">{t.applyTitle}</a></p>
-    </header>
-  </section>
 
   <section class="section section--surface" id="apply" aria-labelledby="apply-title">
     <div class="container apply">
@@ -150,6 +179,12 @@ const rolePhotos = [photos.railSlide, photos.swissTrick];
     display: grid;
     justify-items: start;
     gap: 20px;
+    container-type: inline-size;
+  }
+
+  /* Sized to the column, so "Gänget." fits. */
+  .team-hero .display {
+    font-size: min(7rem, 15cqi);
   }
 
   .team-hero-media {
@@ -187,10 +222,61 @@ const rolePhotos = [photos.railSlide, photos.swissTrick];
     object-fit: cover;
   }
 
-  .profiles-head {
+  /* Follows the hero directly, which already has bottom padding. */
+  .riders {
+    padding-top: 0;
+  }
+
+  .riders-head {
     display: grid;
     gap: 12px;
-    max-width: 44em;
+    margin-bottom: clamp(28px, 4vw, 56px);
+  }
+
+  .rider-list {
+    border-top: 1px solid var(--line);
+  }
+
+  .rider {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 16px;
+    padding-block: clamp(18px, 2.4vw, 30px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .rider-no {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .rider-name {
+    font-size: clamp(1.625rem, 4.6vw, 4rem);
+    font-weight: 800;
+    font-stretch: 125%;
+    line-height: 1;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+  }
+
+  .rider-role {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  a.rider-role:hover {
+    color: var(--ink);
+  }
+
+  .riders-apply {
+    margin-top: clamp(20px, 3vw, 32px);
+    color: var(--muted);
   }
 
   .apply {
@@ -246,6 +332,19 @@ const rolePhotos = [photos.railSlide, photos.swissTrick];
   }
 
   @media (max-width: 560px) {
+    .rider {
+      grid-template-columns: 2rem minmax(0, 1fr);
+      row-gap: 6px;
+    }
+
+    .rider-role {
+      grid-column: 2;
+    }
+
+    .rider-name {
+      font-size: clamp(1.25rem, 6.6vw, 1.625rem);
+    }
+
     .field-row {
       grid-template-columns: 1fr;
     }

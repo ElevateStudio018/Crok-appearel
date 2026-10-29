@@ -1,5 +1,6 @@
 import { site } from '../data/site';
 import type { Product } from '../data/products';
+import { instagramUrl, type Rider } from '../data/team';
 import { languages, localizePath, type Lang } from '../i18n';
 
 // JSON-LD builders (https://schema.org). Rendered by BaseLayout.
@@ -106,6 +107,22 @@ export const itemListSchema = (items: { name: string; path: string }[]) => ({
     position: i + 1,
     name: item.name,
     url: abs(item.path),
+  })),
+});
+
+export const teamSchema = (riders: Rider[], role: string) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: riders.map((rider, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'Person',
+      name: rider.name,
+      jobTitle: role,
+      memberOf: { '@id': abs('/#organization') },
+      ...(rider.instagram ? { sameAs: [instagramUrl(rider.instagram)] } : {}),
+    },
   })),
 });
 

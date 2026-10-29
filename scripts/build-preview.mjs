@@ -4,12 +4,14 @@
 // - root-relative URLs ("/shop", "/_astro/x.css") become relative ("shop.html", "../_astro/x.css")
 // - page links get their .html file name, since githack has no pretty URLs
 // - every page gets noindex so the preview never competes with wearcork.shop
-// - images, videos and fonts that are already committed load from jsDelivr, pinned
-//   to that commit: githack hands binary files on to raw.githubusercontent.com,
-//   which rate-limits shared connections (mobile networks), so they can fail to load
+// - CSS, scripts, images, videos and fonts that are already committed load from
+//   jsDelivr, pinned to that commit. githack hands binary files on to
+//   raw.githubusercontent.com, which rate-limits shared connections (mobile networks),
+//   and it can serve a cached page from an older build whose CSS and images are gone.
+//   Pinned files never go missing, so even a cached page stays complete.
 //
 // Usage: npm run preview:githack  (builds first, then runs this script)
-// New or changed images are not committed yet on the first run, so they fall back
+// New or changed files are not committed yet on the first run, so they fall back
 // to githack. Commit, run `npm run preview:pin` and commit again to pin them too.
 // Checkout and forms need Netlify and do not work in the preview.
 
@@ -49,7 +51,7 @@ const toFile = (url) => {
 const isRootPath = (url) => url.startsWith('/') && !url.startsWith('//');
 
 const cdnRepo = 'ElevateStudio018/Crok-appearel';
-const binary = /\.(avif|webp|png|jpe?g|gif|ico|mp4|webm|woff2?)$/i;
+const pinnable = /\.(css|js|avif|webp|png|jpe?g|gif|svg|ico|mp4|webm|woff2?)$/i;
 
 // Blob ids of the preview files in HEAD, to tell which output files jsDelivr can serve.
 const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
@@ -74,7 +76,7 @@ const cdnFiles = new Map();
 /** "_astro/a.avif" -> jsDelivr URL if HEAD has the exact same file, otherwise null */
 const cdnUrl = (file) => {
   const [, path, rest = ''] = file.match(/^([^?#]*)(.*)$/);
-  if (!binary.test(path)) return null;
+  if (!pinnable.test(path)) return null;
   if (!cdnFiles.has(path)) {
     const key = `preview/${path}`;
     const local = join(out, path);
@@ -85,19 +87,17 @@ const cdnUrl = (file) => {
   return url && url + rest;
 };
 
-let pages = 0;
-for (const file of walk(out)) {
-  if (file.endsWith('.css')) {
-    // CSS lives in _astro/, next to the fonts it references.
-    const css = readFileSync(file, 'utf8').replace(
-      /url\(\/_astro\/([^)]+)\)/g,
-      (_, name) => `url(${cdnUrl(`_astro/${name}`) ?? `./${name}`})`,
-    );
-    writeFileSync(file, css);
-    continue;
-  }
-  if (!file.endsWith('.html')) continue;
+const files = walk(out);
 
+// CSS first, so it is in its final form when the pages compare it with HEAD.
+// It lives in _astro/ next to its fonts; relative font URLs keep it free of commit
+// hashes, so the same CSS can be pinned on the next run.
+for (const file of files.filter((f) => f.endsWith('.css'))) {
+  writeFileSync(file, readFileSync(file, 'utf8').replace(/url\(\/_astro\//g, 'url(./'));
+}
+
+let pages = 0;
+for (const file of files.filter((f) => f.endsWith('.html'))) {
   const depth = relative(out, dirname(file)).split(sep).filter(Boolean).length;
   const prefix = depth ? '../'.repeat(depth) : './';
   const rel = (url) => {
@@ -134,7 +134,7 @@ writeFileSync(join(out, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
 const urls = [...cdnFiles.values()];
 const pinned = urls.filter(Boolean).length;
 console.log(`preview/ ready: ${pages} pages rewritten for sub-folder hosting.`);
-console.log(`${pinned} of ${urls.length} images, videos and fonts load from jsDelivr @ ${commit.slice(0, 7) || '–'}.`);
+console.log(`${pinned} of ${urls.length} CSS, script, image, video and font files load from jsDelivr @ ${commit.slice(0, 7) || '–'}.`);
 if (pinned < urls.length) {
   console.log('The rest are new or changed: commit preview/, then run `npm run preview:pin` and commit again.');
 }

@@ -14,7 +14,7 @@ const more = fill(t.more, { contact: localizePath('/contact', lang), policies: l
 
 <section class="section faq" aria-labelledby="faq-title">
   <div class="container faq-grid">
-    <div>
+    <div class="faq-head">
       <span class="eyebrow muted">{t.eyebrow}</span>
       <h2 id="faq-title" class="h2 faq-title">{t.title}</h2>
       <p class="muted faq-more" set:html={more} />
@@ -41,8 +41,14 @@ const more = fill(t.more, { contact: localizePath('/contact', lang), policies: l
     gap: clamp(32px, 6vw, 96px);
   }
 
+  /* Sized to the column, so long words such as "förbeställning" fit. */
+  .faq-head {
+    container-type: inline-size;
+  }
+
   .faq-title {
     margin-top: 12px;
+    font-size: min(3rem, 8.6cqi);
   }
 
   .faq-more {
