@@ -1,0 +1,104 @@
+---
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import { photos } from '../data/photos';
+import { localizePath, type Lang } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  /** Unique id prefix when the block appears on a page with other headings. */
+  id?: string;
+  showLink?: boolean;
+}
+
+const { lang, id = 'story', showLink = true } = Astro.props;
+const t = ui[lang].story;
+---
+
+<section class="section story" aria-labelledby={`${id}-title`}>
+  <div class="container story-grid">
+    <div class="story-copy">
+      <span class="eyebrow muted">{t.eyebrow}</span>
+      <h2 id={`${id}-title`} class="h1">{t.title}</h2>
+      <div class="story-text">
+        {t.paragraphs.map((p, i) => <p class:list={[i === 0 ? 'lead' : 'story-p']}>{p}</p>)}
+      </div>
+      {
+        showLink && (
+          <a class="link-arrow" href={localizePath('/about', lang)}>
+            {t.link} <Icon name="arrow-right" size={14} />
+          </a>
+        )
+      }
+    </div>
+
+    <div class="story-collage" role="group" aria-label={t.imagesLabel}>
+      <figure class="photo-frame collage-tall">
+        <Photo photo={photos.railSlide} lang={lang} widths={[400, 640, 960, 1280]} sizes="(max-width: 860px) 50vw, 30vw" />
+      </figure>
+      <figure class="photo-frame collage-top">
+        <Photo photo={photos.streetRail} lang={lang} widths={[400, 640, 960]} sizes="(max-width: 860px) 50vw, 30vw" />
+      </figure>
+      <figure class="photo-frame collage-bottom">
+        <Photo photo={photos.swissTrick} lang={lang} widths={[400, 640, 960]} sizes="(max-width: 860px) 50vw, 30vw" />
+      </figure>
+    </div>
+  </div>
+</section>
+
+<style>
+  .story-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: center;
+    gap: clamp(32px, 6vw, 96px);
+  }
+
+  .story-copy {
+    display: grid;
+    justify-items: start;
+    gap: 22px;
+  }
+
+  .story-text {
+    display: grid;
+    gap: 14px;
+    max-width: 34em;
+  }
+
+  .story-p {
+    color: var(--ink-2);
+  }
+
+  .story-collage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(8px, 1.2vw, 16px);
+    aspect-ratio: 4 / 3;
+  }
+
+  .story-collage figure {
+    margin: 0;
+    min-height: 0;
+  }
+
+  .collage-tall {
+    grid-row: 1 / span 2;
+  }
+
+  .collage-bottom :global(img) {
+    object-position: 60% 55%;
+  }
+
+  @media (max-width: 860px) {
+    .story-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .story-collage {
+      aspect-ratio: 1 / 1;
+    }
+  }
+</style>

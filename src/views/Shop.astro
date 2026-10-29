@@ -5,6 +5,7 @@ import ProductCard from '../components/ProductCard.astro';
 import ServiceRow from '../components/ServiceRow.astro';
 import Photo from '../components/Photo.astro';
 import Icon from '../components/Icon.astro';
+import Story from '../components/Story.astro';
 import { getProducts } from '../data/products';
 import { photos } from '../data/photos';
 import { site } from '../data/site';
@@ -51,6 +52,8 @@ const schema = [
       {products.map((product, i) => <ProductCard product={product} lang={lang} headingLevel="h2" eager={i < 2} />)}
     </div>
   </section>
+
+  <Story lang={lang} id="history" />
 
   <ServiceRow lang={lang} />
 

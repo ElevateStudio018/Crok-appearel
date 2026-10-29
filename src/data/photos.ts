@@ -15,6 +15,7 @@ import streetRailCrowd from '../assets/photos/street-rail-crowd.jpg';
 import parkRailHoodie from '../assets/photos/park-rail-hoodie.jpg';
 import parkBoxSlide from '../assets/photos/park-box-slide.jpg';
 import powderSunsetNorway from '../assets/photos/powder-sunset-norway.jpg';
+import swissTrick from '../assets/photos/swiss-trick.jpg';
 
 export interface Photo {
   src: ImageMetadata;
@@ -32,7 +33,8 @@ export interface Photo {
 const jdf = 'Jean-Daniel Francoeur';
 
 export const photos = {
-  // Picked by CORK: 15751546 (colour), 15751550 (black and white), 15897059 (colour).
+  // Picked by CORK: 15751546 (colour hero) and, in the image picker,
+  // 15751550, 15897059 and 25400943 in black and white.
   hero: {
     src: nightRailJam,
     alt: {
@@ -101,7 +103,17 @@ export const photos = {
     },
     credit: 'Frank Cone',
     pexelsId: '15897059',
-    mono: false,
+    mono: true,
+  },
+  swissTrick: {
+    src: swissTrick,
+    alt: {
+      en: 'Black and white photo of a skier inverted off a kicker above wind-sculpted snow in Switzerland',
+      sv: 'Svartvit bild på en skidåkare upp och ner från en kicker ovanför vindformad snö i Schweiz',
+    },
+    credit: 'Thomas Forsberg',
+    pexelsId: '25400943',
+    mono: true,
   },
   parkRail: {
     src: parkRailHoodie,

@@ -110,13 +110,6 @@ const en = {
       { value: '90/10', label: 'Down fill', detail: 'CORK 3 Puff Jacket' },
       { value: '25', label: 'Pieces per style', detail: 'The full CORK 3 run' },
     ],
-    storyEyebrow: 'Our story',
-    storyTitle: 'Not made to fit in.',
-    storyLead:
-      'CORK started in Sweden as a small circle of friends who skied, filmed and made their own clothes. No plan. No investors. Just pieces made for nights on the rail and days in the city.',
-    storyText:
-      'CORK 3 is our first collection, named after the cork 3 – the trick where it all started. Two pieces, made in small numbers once the pre-order closes.',
-    storyLink: 'More about CORK',
     editorialTitle: 'Nights on the rail.<br /> Days in the city.',
     editorialCta: 'Shop CORK 3',
   },
@@ -249,6 +242,17 @@ const en = {
     lead: 'We could not find that page. It may have moved, or the link is wrong.',
     shop: 'Shop CORK 3',
     home: 'Go to the homepage',
+  },
+  story: {
+    eyebrow: 'History',
+    title: 'Not made to fit in.',
+    paragraphs: [
+      'CORK started in Sweden as a small circle of friends who skied, filmed and made their own clothes.',
+      'No plan. No investors. Just pieces made for nights on the rail and days in the city.',
+      'CORK 3 is our first collection. Named after the cork 3, the trick where it all started. Two pieces, made in small numbers.',
+    ],
+    link: 'More about CORK',
+    imagesLabel: 'Night rails and big air',
   },
   videos: {
     crumb: 'Videos',
@@ -553,13 +557,6 @@ const sv: UI = {
       { value: '90/10', label: 'Dunfyllning', detail: 'CORK 3 Puff Jacket' },
       { value: '25', label: 'Exemplar per modell', detail: 'Hela CORK 3-upplagan' },
     ],
-    storyEyebrow: 'Vår historia',
-    storyTitle: 'Inte gjord för att passa in.',
-    storyLead:
-      'CORK startade i Sverige som ett litet gäng vänner som åkte skidor, filmade och gjorde sina egna kläder. Ingen plan. Inga investerare. Bara plagg gjorda för kvällar på railen och dagar i stan.',
-    storyText:
-      'CORK 3 är vår första kollektion, döpt efter cork 3 – tricket där allt började. Två plagg, tillverkade i små upplagor när förbeställningen stängt.',
-    storyLink: 'Mer om CORK',
     editorialTitle: 'Kvällar på railen.<br /> Dagar i stan.',
     editorialCta: 'Shoppa CORK 3',
   },
@@ -692,6 +689,17 @@ const sv: UI = {
     lead: 'Vi hittade inte sidan. Den kan ha flyttats, eller så är länken fel.',
     shop: 'Shoppa CORK 3',
     home: 'Till startsidan',
+  },
+  story: {
+    eyebrow: 'Historia',
+    title: 'Inte gjord för att passa in.',
+    paragraphs: [
+      'CORK startade i Sverige som ett litet gäng vänner som åkte skidor, filmade och gjorde sina egna kläder.',
+      'Ingen plan. Inga investerare. Bara plagg gjorda för kvällar på railen och dagar i stan.',
+      'CORK 3 är vår första kollektion. Döpt efter cork 3, tricket där allt började. Två plagg, tillverkade i små upplagor.',
+    ],
+    link: 'Mer om CORK',
+    imagesLabel: 'Kvällsrails och stora hopp',
   },
   videos: {
     crumb: 'Videor',
