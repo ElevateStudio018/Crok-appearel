@@ -52,51 +52,35 @@ const tiles = [
 </section>
 
 <style>
+  /* Full screen: the three photos fill the screen below the header, the copy sits on top. */
   .hero {
-    display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    min-height: min(calc(100svh - var(--header-h) - 34px), 900px);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: calc(100svh - var(--header-h) - 34px);
     background: var(--dark);
     color: var(--on-dark);
-  }
-
-  .hero-copy {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: flex-start;
-    gap: 22px;
-    padding: clamp(48px, 6vw, 96px) var(--gutter);
-  }
-
-  .hero-title {
-    font-size: clamp(2.25rem, 3.4vw, 4.25rem);
-    font-weight: 800;
-    font-stretch: 125%;
-    line-height: 0.92;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-  }
-
-  .hero-text {
-    max-width: 28em;
-    font-size: clamp(1rem, 1.25vw, 1.1875rem);
-    line-height: 1.55;
-    color: #d6d6d1;
-  }
-
-  .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 6px;
+    overflow: hidden;
   }
 
   .hero-media {
+    position: absolute;
+    inset: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
     gap: 4px;
+  }
+
+  /* darkens the bottom left so the copy reads on any photo */
+  .hero-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(0deg, rgb(10 10 10 / 0.88) 0%, rgb(10 10 10 / 0.45) 38%, rgb(10 10 10 / 0) 65%),
+      linear-gradient(90deg, rgb(10 10 10 / 0.5) 0%, rgb(10 10 10 / 0) 55%);
+    pointer-events: none;
   }
 
   .hero-tile {
@@ -124,7 +108,7 @@ const tiles = [
   }
 
   .tile-main :global(img) {
-    object-position: 45% 50%;
+    object-position: 45% 40%;
   }
 
   .tile-top :global(img) {
@@ -135,17 +119,52 @@ const tiles = [
     object-position: 62% 50%;
   }
 
+  .hero-copy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+    width: min(100%, 900px);
+    padding: clamp(48px, 6vw, 96px) var(--gutter);
+  }
+
+  .hero-title {
+    font-size: clamp(2.25rem, 4.6vw, 5.25rem);
+    font-weight: 800;
+    font-stretch: 125%;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  .hero-text {
+    max-width: 28em;
+    font-size: clamp(1rem, 1.25vw, 1.1875rem);
+    line-height: 1.55;
+    color: #e2e2dd;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 6px;
+  }
+
   @media (max-width: 860px) {
     .hero {
-      grid-template-columns: minmax(0, 1fr);
-      min-height: 0;
+      min-height: calc(100svh - var(--header-h) - 56px);
     }
 
     .hero-media {
-      grid-row: 1;
       grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-      aspect-ratio: 1 / 1;
       gap: 3px;
+    }
+
+    .hero-media::after {
+      background: linear-gradient(0deg, rgb(10 10 10 / 0.92) 0%, rgb(10 10 10 / 0.6) 40%, rgb(10 10 10 / 0) 70%);
     }
 
     .hero-copy {
