@@ -30,6 +30,9 @@ const year = new Date().getFullYear();
       <div class="footer-brand">
         <a href={href('/')} class="footer-logo" aria-label={t.meta.homeLabel}><Logo /></a>
         <p>{fill(t.footer.blurb, { city: site.address.city })}</p>
+        <address>
+          {site.name} · {site.address.street} · {site.address.city}, {site.address.country[lang]}
+        </address>
         {
           socials.length > 0 && (
             <ul role="list" class="socials">
@@ -60,14 +63,6 @@ const year = new Date().getFullYear();
         ))
       }
 
-      <div class="footer-col">
-        <h2 class="footer-heading">{t.footer.address}</h2>
-        <address>
-          {site.name}<br />
-          {site.address.street}<br />
-          {site.address.city}, {site.address.country[lang]}
-        </address>
-      </div>
     </div>
 
     <div class="footer-bottom">
@@ -144,7 +139,9 @@ const year = new Date().getFullYear();
   }
 
   address {
+    margin-top: 16px;
     font-style: normal;
+    font-size: 0.875rem;
     color: var(--on-dark-muted);
     line-height: 1.7;
   }

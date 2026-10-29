@@ -25,5 +25,5 @@ const { photo, lang, sizes, widths = [480, 720, 960, 1280], loading = 'lazy', cl
   sizes={sizes}
   quality={68}
   loading={loading}
-  class={className}
+  class:list={[className, photo.mono && 'is-mono']}
 />

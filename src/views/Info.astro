@@ -1,0 +1,228 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import Icon from '../components/Icon.astro';
+import { getProducts } from '../data/products';
+import { site } from '../data/site';
+import { breadcrumbSchema, webPageSchema } from '../lib/schema';
+import { localizePath, type Lang } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].info;
+const href = (path: string) => (path.startsWith('#') ? path : localizePath(path, lang));
+const products = getProducts(lang);
+
+const crumbs = [
+  { name: ui[lang].meta.home, path: localizePath('/', lang) },
+  { name: t.crumb, path: localizePath('/info', lang) },
+];
+const schema = [breadcrumbSchema(crumbs), webPageSchema('WebPage', t.heading, localizePath('/info', lang), lang)];
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} schema={schema}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+
+  <section class="container info-intro" aria-labelledby="info-title">
+    <span class="eyebrow muted">{t.eyebrow}</span>
+    <h1 id="info-title" class="display">{t.heading}</h1>
+    <p class="lead">{t.lead}</p>
+  </section>
+
+  <section class="container info-cards-wrap" aria-label={t.heading}>
+    <ul role="list" class="info-cards">
+      {
+        t.cards.map((card) => (
+          <li class="info-card" id={card.id}>
+            <h2 class="h3">{card.title}</h2>
+            <p class="muted">{card.text}</p>
+            <a class="link-arrow" href={href(card.href)}>
+              {t.readMore} <Icon name="arrow-right" size={14} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="section section--surface" id="sizing" aria-labelledby="sizing-title">
+    <div class="container">
+      <header class="sizing-head">
+        <h2 id="sizing-title" class="h2">{t.sizingTitle}</h2>
+        <p class="muted">{t.sizingLead}</p>
+      </header>
+      <div class="sizing-grid">
+        {
+          products.map((p) => (
+            <article class="size-card">
+              <h3 class="h3">{p.name}</h3>
+              <p class="muted">{p.fitNote}</p>
+              {p.sizeGuide && (
+                <>
+                  <table class="spec-table spec-table--grid">
+                    <thead>
+                      <tr>
+                        {p.sizeGuide.columns.map((c) => (
+                          <th scope="col">{c}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {p.sizeGuide.rows.map((row) => (
+                        <tr>
+                          {row.map((cell, i) => (i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p class="muted small">{p.sizeGuide.note}</p>
+                </>
+              )}
+              <a class="link-arrow" href={localizePath(`/product/${p.id}`, lang)}>
+                {t.viewProduct} <Icon name="arrow-right" size={14} />
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <Faq lang={lang} />
+
+  <section class="section section--dark" aria-labelledby="company-title">
+    <div class="container company">
+      <div>
+        <h2 id="company-title" class="h2">{t.companyTitle}</h2>
+        <p class="company-text">{t.companyText}</p>
+      </div>
+      <address>
+        {site.name}<br />
+        {site.address.street}<br />
+        {site.address.city}, {site.address.country[lang]}
+      </address>
+      <a class="btn btn--light" href={localizePath('/contact', lang)}>{t.contactButton}</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .info-intro {
+    display: grid;
+    gap: 16px;
+    padding-block: clamp(16px, 3vw, 40px) clamp(28px, 4vw, 48px);
+  }
+
+  .info-cards-wrap {
+    padding-bottom: var(--section);
+  }
+
+  .info-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+  }
+
+  .info-card {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 12px;
+    padding: 28px 28px 32px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .info-card:not(:nth-child(3n + 1)) {
+    padding-left: 28px;
+    border-left: 1px solid var(--line);
+  }
+
+  .info-card .link-arrow {
+    margin-top: 4px;
+  }
+
+  .sizing-head {
+    display: grid;
+    gap: 10px;
+    margin-bottom: clamp(24px, 3vw, 40px);
+  }
+
+  .sizing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 32px);
+  }
+
+  .size-card {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 16px;
+    padding: clamp(20px, 3vw, 36px);
+    background: var(--bg);
+  }
+
+  .size-card .spec-table {
+    width: 100%;
+  }
+
+  .small {
+    font-size: 0.8125rem;
+  }
+
+  .company {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 24px 48px;
+  }
+
+  .company-text {
+    margin-top: 12px;
+    color: var(--on-dark-muted);
+  }
+
+  .company address {
+    font-style: normal;
+    color: var(--on-dark-muted);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 1000px) {
+    .info-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .info-card:not(:nth-child(3n + 1)) {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .info-card:nth-child(2n) {
+      padding-left: 28px;
+      border-left: 1px solid var(--line);
+    }
+
+    .company {
+      grid-template-columns: 1fr;
+      justify-items: start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .info-cards,
+    .sizing-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .info-card:nth-child(2n) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+</style>

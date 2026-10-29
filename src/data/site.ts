@@ -32,16 +32,22 @@ type NavItem = { href: string; label: string };
 
 export const nav: Record<Lang, NavItem[]> = {
   en: [
+    { href: '/videos', label: 'Videos' },
     { href: '/shop', label: 'Shop' },
+    { href: '/team', label: 'Team' },
     { href: '/about', label: 'About' },
-    { href: '/policies#shipping', label: 'Shipping & Returns' },
-    { href: '/contact', label: 'Contact' },
+    { href: '/backstage', label: 'Backstage' },
+    { href: '/mailing-list', label: 'Mailing list' },
+    { href: '/info', label: 'Info' },
   ],
   sv: [
+    { href: '/videos', label: 'Videor' },
     { href: '/shop', label: 'Shop' },
+    { href: '/team', label: 'Team' },
     { href: '/about', label: 'Om oss' },
-    { href: '/policies#shipping', label: 'Frakt & retur' },
-    { href: '/contact', label: 'Kontakt' },
+    { href: '/backstage', label: 'Backstage' },
+    { href: '/mailing-list', label: 'Nyhetsbrev' },
+    { href: '/info', label: 'Info' },
   ],
 };
 
@@ -56,9 +62,19 @@ export const footerNav: Record<Lang, { title: string; links: NavItem[] }[]> = {
       ],
     },
     {
+      title: 'Explore',
+      links: [
+        { href: '/videos', label: 'Videos' },
+        { href: '/team', label: 'Team' },
+        { href: '/backstage', label: 'Backstage' },
+        { href: '/mailing-list', label: 'Mailing list' },
+      ],
+    },
+    {
       title: 'Help',
       links: [
-        { href: '/policies#pre-order', label: 'Pre-orders' },
+        { href: '/info', label: 'Info & FAQ' },
+        { href: '/info#sizing', label: 'Size guide' },
         { href: '/policies#shipping', label: 'Shipping' },
         { href: '/policies#returns', label: 'Returns' },
         { href: '/contact', label: 'Contact us' },
@@ -83,9 +99,19 @@ export const footerNav: Record<Lang, { title: string; links: NavItem[] }[]> = {
       ],
     },
     {
+      title: 'Utforska',
+      links: [
+        { href: '/videos', label: 'Videor' },
+        { href: '/team', label: 'Team' },
+        { href: '/backstage', label: 'Backstage' },
+        { href: '/mailing-list', label: 'Nyhetsbrev' },
+      ],
+    },
+    {
       title: 'Hjälp',
       links: [
-        { href: '/policies#pre-order', label: 'Förbeställningar' },
+        { href: '/info', label: 'Info & FAQ' },
+        { href: '/info#sizing', label: 'Storleksguide' },
         { href: '/policies#shipping', label: 'Frakt' },
         { href: '/policies#returns', label: 'Returer' },
         { href: '/contact', label: 'Kontakta oss' },

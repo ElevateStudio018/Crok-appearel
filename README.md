@@ -40,7 +40,8 @@ src/
     site.ts        Brand info, address, navigation, social links, announcement bar
     catalog.ts     Prices, sizes, pre-order status (also used by the checkout function)
     products.ts    Product copy (EN/SV), specs, size guides, gallery images, SEO titles
-    photos.ts      Editorial photos + Pexels credits
+    photos.ts      Editorial photos + Pexels credits (`mono: true` shows a photo in black and white)
+    videos.ts      Video clips on /videos (files in public/videos/)
     faq.ts         FAQ (shown on the home page and as FAQPage schema)
     policies.ts    Pre-order, shipping, returns, privacy and purchase terms
   i18n/            Language routing helpers and UI strings (EN/SV)
@@ -66,6 +67,9 @@ preview/         Generated githack preview – do not edit by hand
 | Announcement bar, ship-by date, address | `src/data/site.ts` |
 | Buttons, headings and other UI text | `src/i18n/ui.ts` |
 | Instagram/YouTube/TikTok links | `site.social` in `src/data/site.ts` (empty values are hidden) |
+| Menu and footer links | `nav` and `footerNav` in `src/data/site.ts` |
+| Swap a photo, or colour ↔ black and white | `src/data/photos.ts` (put the colour original in `src/assets/photos/`) |
+| Add or replace a video | `src/data/videos.ts` + an H.264 MP4 and a poster in `public/videos/` |
 | New product | Add it to `catalog.ts` + `products.ts` and put its images in `src/assets/products/` |
 
 ## Deploying (Netlify)
@@ -81,7 +85,7 @@ The site is set up for Netlify (`netlify.toml`): static hosting, forms, the chec
 4. **Domain:** point `wearcork.shop` at Netlify.
 5. Submit `https://wearcork.shop/sitemap-index.xml` in Google Search Console.
 
-Old URLs (`/team`, `/videos`, `/backstage`, `/mailing-list`, `/info`) are 301-redirected to the matching new pages.
+The menu follows the original site: Videos, Shop, Team, About, Backstage, Mailing list and Info (Swedish: Videor, Shop, Team, Om oss, Backstage, Nyhetsbrev, Info). Netlify Forms picks up three forms: `contact`, `newsletter` and `team` (rider/filmer applications on /team).
 
 ## SEO
 
@@ -95,7 +99,8 @@ Old URLs (`/team`, `/videos`, `/backstage`, `/mailing-list`, `/info`) are 301-re
 ## Images
 
 - **Product photos** are CORK's own photos from the previous site.
-- **Editorial photos** come from [Pexels](https://www.pexels.com/license/) (free to use commercially, no attribution required). They are converted to black and white and credited on `/about#credits`. Photographers: Jean-Daniel Francoeur, Ahmet Yüksek, Federico Tomasoni, Luca Severin.
+- **Editorial photos** come from [Pexels](https://www.pexels.com/license/) (free to use commercially, no attribution required). The files are the colour originals; `mono` in `photos.ts` decides whether a photo is shown in black and white. All photographers are credited on `/about#credits`.
+- **Videos** on `/videos` are Pexels clips (Alex Moliski, Rob Bouchat), re-encoded to 720p without sound (about 1–2 MB each) and credited on every clip.
 - The previous site's AI-generated images (fisheye skier, the "cork workshop") have been removed.
 
 When CORK has its own lookbook photos, replace the files in `src/assets/photos/` (or point `photos.ts` at new files) – the layout stays the same.

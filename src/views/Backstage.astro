@@ -1,0 +1,318 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Photo from '../components/Photo.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { photos } from '../data/photos';
+import { getProducts } from '../data/products';
+import { breadcrumbSchema, webPageSchema } from '../lib/schema';
+import { localizePath, type Lang } from '../i18n';
+import { ui } from '../i18n/ui';
+import pantsWaist from '../assets/products/cork-3-pants-waist.jpg';
+import pantsPocket from '../assets/products/cork-3-pants-pocket.jpg';
+import pantsHem from '../assets/products/cork-3-pants-hem.jpg';
+import puffLabel from '../assets/products/cork-3-puff-label.jpg';
+import puffPocket from '../assets/products/cork-3-puff-pocket.jpg';
+import puffBack from '../assets/products/cork-3-puff-back.jpg';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].backstage;
+const href = (path: string) => localizePath(path, lang);
+const detailImages = [pantsWaist, pantsPocket, pantsHem, puffLabel, puffPocket, puffBack];
+
+const crumbs = [
+  { name: ui[lang].meta.home, path: href('/') },
+  { name: t.crumb, path: href('/backstage') },
+];
+const schema = [breadcrumbSchema(crumbs), webPageSchema('WebPage', t.heading, href('/backstage'), lang)];
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} schema={schema}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+
+  <section class="container bs-intro" aria-labelledby="bs-title">
+    <span class="eyebrow muted">{t.eyebrow}</span>
+    <h1 id="bs-title" class="display">{t.heading}</h1>
+    <p class="lead">{t.lead}</p>
+  </section>
+
+  <figure class="container bs-hero">
+    <div class="photo-frame bs-hero-frame">
+      <Photo photo={photos.parkBox} lang={lang} widths={[640, 960, 1440, 2000]} sizes="100vw" loading="eager" />
+    </div>
+  </figure>
+
+  <section class="section container" aria-labelledby="timeline-title">
+    <h2 id="timeline-title" class="h2 bs-section-title">{t.timelineTitle}</h2>
+    <ol class="timeline">
+      {
+        t.steps.map((step, i) => (
+          <li class:list={['step', { 'step--now': i === 0 }]}>
+            <span class="step-no">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h3 class="h3">
+                {step.title}
+                {i === 0 && <span class="tag">{t.now}</span>}
+              </h3>
+              <p class="muted">{step.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="details-title">
+    <div class="container">
+      <header class="bs-head">
+        <h2 id="details-title" class="h2">{t.detailsTitle}</h2>
+        <p class="muted">{t.detailsLead}</p>
+      </header>
+      <ul role="list" class="details">
+        {
+          t.details.map((d, i) => (
+            <li class="detail">
+              <div class="detail-media">
+                <Image src={detailImages[i]} alt={d.text} widths={[400, 640, 1024]} sizes="(max-width: 760px) 100vw, 33vw" />
+              </div>
+              <h3 class="h3">{d.title}</h3>
+              <p class="muted">{d.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--dark" aria-labelledby="specs-title">
+    <div class="container">
+      <h2 id="specs-title" class="h2 bs-section-title">{t.specsTitle}</h2>
+      <dl class="specs">
+        {
+          t.specs.map((s) => (
+            <div class="spec">
+              <dt>
+                <span class="spec-value">{s.value}</span>
+                <span class="spec-label">{s.label}</span>
+              </dt>
+              <dd>{s.text}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="section container" aria-labelledby="bs-shop-title">
+    <h2 id="bs-shop-title" class="h2 bs-section-title">{t.ctaTitle}</h2>
+    <div class="bs-products">
+      {getProducts(lang).map((p) => <ProductCard product={p} lang={lang} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .bs-intro {
+    display: grid;
+    gap: 16px;
+    padding-block: clamp(16px, 3vw, 40px) clamp(28px, 4vw, 48px);
+  }
+
+  .bs-intro .lead {
+    max-width: 40em;
+  }
+
+  .bs-hero-frame {
+    aspect-ratio: 21 / 9;
+  }
+
+  .bs-section-title {
+    margin-bottom: clamp(28px, 4vw, 48px);
+  }
+
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    list-style: none;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .step {
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    padding: 24px 20px 8px 0;
+  }
+
+  .step + .step {
+    padding-left: 20px;
+    border-left: 1px solid var(--line);
+  }
+
+  .step-no {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  .step h3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .step--now {
+    box-shadow: inset 0 3px 0 var(--ink);
+  }
+
+  .bs-head {
+    display: grid;
+    gap: 10px;
+    margin-bottom: clamp(24px, 3vw, 40px);
+    max-width: 40em;
+  }
+
+  .details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(20px, 2.5vw, 36px);
+  }
+
+  .detail {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+  }
+
+  .detail-media {
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--bg);
+    margin-bottom: 6px;
+  }
+
+  .detail-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .specs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    border-top: 1px solid #2c2c2c;
+  }
+
+  .spec {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 28px 24px 28px 0;
+    border-bottom: 1px solid #2c2c2c;
+  }
+
+  .spec:not(:nth-child(3n + 1)) {
+    padding-left: 24px;
+    border-left: 1px solid #2c2c2c;
+  }
+
+  .spec dt {
+    display: grid;
+    gap: 6px;
+  }
+
+  .spec-value {
+    font-size: clamp(1.75rem, 3vw, 2.75rem);
+    font-weight: 800;
+    font-stretch: 125%;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  .spec-label {
+    font-size: 0.8125rem;
+    font-weight: 650;
+    font-stretch: 112%;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .spec dd {
+    margin: 0;
+    color: var(--on-dark-muted);
+  }
+
+  .bs-products {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 32px);
+  }
+
+  @media (max-width: 1000px) {
+    .timeline {
+      grid-template-columns: 1fr;
+    }
+
+    .step,
+    .step + .step {
+      grid-template-columns: 48px minmax(0, 1fr);
+      padding: 20px 0;
+      border-left: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .step--now {
+      box-shadow: inset 3px 0 0 var(--ink);
+      padding-left: 16px;
+    }
+
+    .specs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .spec:not(:nth-child(3n + 1)) {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .spec:nth-child(2n) {
+      padding-left: 24px;
+      border-left: 1px solid #2c2c2c;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .details {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .bs-hero-frame {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .specs,
+    .bs-products {
+      grid-template-columns: 1fr;
+    }
+
+    .spec:nth-child(2n) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+</style>

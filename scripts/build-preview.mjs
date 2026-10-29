@@ -57,8 +57,8 @@ for (const file of walk(out)) {
 
   let html = readFileSync(file, 'utf8');
   html = html
-    // href, src, action
-    .replace(/(\s(?:href|src|action)=")([^"]*)"/g, (_, attr, url) => `${attr}${rel(url)}"`)
+    // href, src, action, poster
+    .replace(/(\s(?:href|src|action|poster)=")([^"]*)"/g, (_, attr, url) => `${attr}${rel(url)}"`)
     // srcset / imagesrcset
     .replace(/(\s(?:srcset|imagesrcset)=")([^"]*)"/g, (_, attr, set) =>
       `${attr}${set

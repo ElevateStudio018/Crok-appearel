@@ -1,0 +1,93 @@
+---
+import { localizePath, type Lang } from '../i18n';
+import { fill, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  /** Unique per page, so several forms never share an input id. */
+  id: string;
+  tone?: 'dark' | 'light';
+}
+
+const { lang, id, tone = 'dark' } = Astro.props;
+const t = ui[lang].newsletter;
+const f = ui[lang].forms;
+---
+
+<form
+  class:list={['signup', `signup--${tone}`]}
+  name="newsletter"
+  method="POST"
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  data-ajax-form
+  data-msg-sending={f.sending}
+  data-msg-success={t.success}
+  data-msg-error={f.error}
+>
+  <input type="hidden" name="form-name" value="newsletter" />
+  <input type="hidden" name="language" value={lang} />
+  <p class="hp" aria-hidden="true">
+    <label>{f.honeypot} <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
+  </p>
+  <label class="visually-hidden" for={`${id}-email`}>{t.email}</label>
+  <input id={`${id}-email`} class="input" type="email" name="email" required autocomplete="email" placeholder={t.email} />
+  <button class:list={['btn', tone === 'dark' && 'btn--light']} type="submit">{t.submit}</button>
+  <p class="form-status" role="status" aria-live="polite" data-form-status></p>
+  <p class="signup-note" set:html={fill(t.note, { privacy: localizePath('/policies#privacy', lang) })} />
+</form>
+
+<style>
+  .signup {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    width: min(100%, 520px);
+  }
+
+  .signup--dark .input {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(244, 243, 239, 0.45);
+    color: var(--on-dark);
+  }
+
+  .signup--dark .input::placeholder {
+    color: #b9b9b4;
+  }
+
+  .signup--dark .input:focus {
+    border-color: var(--on-dark);
+    box-shadow: 0 0 0 1px var(--on-dark);
+  }
+
+  .form-status {
+    grid-column: 1 / -1;
+    margin-top: 12px;
+    min-height: 1.5em;
+  }
+
+  .signup--dark .form-status[data-state='error'] {
+    color: #ffb4a8;
+  }
+
+  .signup-note {
+    grid-column: 1 / -1;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  .signup--dark .signup-note {
+    color: var(--on-dark-muted);
+  }
+
+  @media (max-width: 520px) {
+    .signup {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+  }
+</style>
+
+<script>
+  import { initAjaxForms } from '../scripts/forms';
+  initAjaxForms();
+</script>

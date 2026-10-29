@@ -1,0 +1,363 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Icon from '../components/Icon.astro';
+import { clips, clipUrl, posterUrl, pexelsVideoUrl, formatDuration } from '../data/videos';
+import { breadcrumbSchema, webPageSchema } from '../lib/schema';
+import { localizePath, type Lang } from '../i18n';
+import { fill, ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].videos;
+const href = (path: string) => localizePath(path, lang);
+const [heroClip] = clips;
+const groups = (['landscape', 'portrait'] as const).map((orientation) => ({
+  orientation,
+  label: orientation === 'portrait' ? t.portrait : t.landscape,
+  items: clips.filter((c) => c.orientation === orientation),
+}));
+
+const crumbs = [
+  { name: ui[lang].meta.home, path: href('/') },
+  { name: t.crumb, path: href('/videos') },
+];
+
+const schema = [breadcrumbSchema(crumbs), webPageSchema('CollectionPage', t.heading, href('/videos'), lang)];
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} schema={schema}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+
+  <section class="video-hero" aria-labelledby="videos-title">
+    <video
+      class="video-hero-media"
+      src={clipUrl(heroClip.slug)}
+      poster={posterUrl(heroClip.slug)}
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      aria-hidden="true"
+      data-ambient
+    ></video>
+    <div class="container video-hero-copy">
+      <span class="eyebrow">{t.eyebrow}</span>
+      <h1 id="videos-title" class="display">{t.heading}</h1>
+      <p class="hero-lead">{t.lead}</p>
+      <p class="hero-credit">{fill(t.footage, { name: heroClip.credit })}</p>
+    </div>
+  </section>
+
+  <section class="section container" aria-labelledby="clips-title">
+    <header class="clips-head">
+      <h2 id="clips-title" class="h2">{t.all}</h2>
+      <p class="muted">{fill(t.count, { n: clips.length })}</p>
+    </header>
+
+    {
+      groups.map((group) => (
+        <div class="clip-group">
+          <h3 class="eyebrow muted clip-group-title">{group.label}</h3>
+          <ul role="list" class:list={['clip-grid', `clip-grid--${group.orientation}`]}>
+            {group.items.map((clip) => (
+              <li class:list={['clip', `clip--${clip.orientation}`]}>
+                <div class="clip-media">
+                  <video src={clipUrl(clip.slug)} poster={posterUrl(clip.slug)} preload="none" playsinline muted loop data-clip />
+                  <button class="clip-play" type="button" data-play aria-label={fill(t.play, { title: clip.title[lang] })}>
+                    <span class="clip-play-icon" aria-hidden="true" />
+                    <span class="clip-duration">{formatDuration(clip.duration)}</span>
+                  </button>
+                </div>
+                <div class="clip-body">
+                  <h4 class="clip-title">{clip.title[lang]}</h4>
+                  <p class="clip-text">{clip.description[lang]}</p>
+                  <p class="clip-meta">
+                    {clip.location && <span>{clip.location} · </span>}
+                    <a href={pexelsVideoUrl(clip.pexelsId)} rel="noopener" target="_blank">
+                      {fill(t.footage, { name: clip.credit })}
+                    </a>
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+    <p class="clips-note muted">{t.note}</p>
+  </section>
+
+  <section class="video-ctas" aria-label={t.ctaTitle}>
+    <div class="container video-ctas-grid">
+      <div class="cta cta--dark">
+        <h2 class="h2">{t.ctaTitle}</h2>
+        <p>{t.ctaText}</p>
+        <a class="btn btn--light" href={href('/mailing-list')}>{t.ctaButton} <Icon name="arrow-right" size={16} /></a>
+      </div>
+      <div class="cta">
+        <h2 class="h2">{t.submitTitle}</h2>
+        <p class="muted">{t.submitText}</p>
+        <a class="btn btn--outline" href={href('/team#apply')}>{t.submitButton}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .video-hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: min(72svh, 760px);
+    overflow: hidden;
+    background: var(--dark);
+    color: var(--on-dark);
+  }
+
+  .video-hero-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .video-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(10, 10, 10, 0.85) 0%, rgba(10, 10, 10, 0.25) 55%, rgba(10, 10, 10, 0.1) 100%);
+  }
+
+  .video-hero-copy {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 16px;
+    padding-block: clamp(40px, 7vw, 88px);
+  }
+
+  .hero-lead {
+    max-width: 36em;
+    font-size: clamp(1rem, 1.3vw, 1.1875rem);
+    color: #deded9;
+  }
+
+  .hero-credit {
+    font-size: 0.75rem;
+    color: var(--on-dark-muted);
+  }
+
+  .clips-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: clamp(24px, 3vw, 40px);
+  }
+
+  .clip-group + .clip-group {
+    margin-top: clamp(40px, 5vw, 72px);
+  }
+
+  .clip-group-title {
+    margin-bottom: 16px;
+  }
+
+  .clip-grid {
+    display: grid;
+    gap: clamp(16px, 2vw, 28px);
+    align-items: start;
+  }
+
+  .clip-grid--landscape {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .clip-grid--portrait {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .clip-media {
+    position: relative;
+    overflow: hidden;
+    background: var(--dark);
+  }
+
+  .clip--landscape .clip-media {
+    aspect-ratio: 16 / 9;
+  }
+
+  .clip--portrait .clip-media {
+    aspect-ratio: 9 / 16;
+  }
+
+  .clip-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .clip-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    padding: 0;
+    background: linear-gradient(0deg, rgba(10, 10, 10, 0.45), rgba(10, 10, 10, 0) 45%);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .clip-play-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(14, 14, 14, 0.6);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    transition: transform 0.2s var(--ease), background-color 0.2s var(--ease);
+  }
+
+  .clip-play-icon::before {
+    content: '';
+    margin-left: 4px;
+    border-style: solid;
+    border-width: 10px 0 10px 16px;
+    border-color: transparent transparent transparent #fff;
+  }
+
+  .clip-play:hover .clip-play-icon {
+    transform: scale(1.06);
+    background: rgba(14, 14, 14, 0.8);
+  }
+
+  .clip-duration {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    padding: 2px 8px;
+    background: rgba(14, 14, 14, 0.75);
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .clip.is-playing .clip-play {
+    display: none;
+  }
+
+  .clip-body {
+    display: grid;
+    gap: 6px;
+    padding-top: 14px;
+  }
+
+  .clip-title {
+    font-size: 1rem;
+    font-weight: 650;
+    font-stretch: 112%;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+
+  .clip-text {
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  .clip-meta {
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  .clips-note {
+    margin-top: clamp(24px, 3vw, 40px);
+    font-size: 0.8125rem;
+  }
+
+  .video-ctas {
+    padding-bottom: var(--section);
+  }
+
+  .video-ctas-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(16px, 2vw, 28px);
+  }
+
+  .cta {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 18px;
+    padding: clamp(28px, 4vw, 56px);
+    background: var(--surface);
+  }
+
+  .cta--dark {
+    background: var(--dark);
+    color: var(--on-dark);
+  }
+
+  .cta--dark p {
+    color: #cfcfca;
+  }
+
+  @media (max-width: 1000px) {
+    .clip-grid--landscape {
+      grid-template-columns: 1fr;
+    }
+
+    .clip-grid--portrait {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .video-ctas-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+</style>
+
+<script>
+  // Ambient hero video: respect reduced motion.
+  const ambient = document.querySelector<HTMLVideoElement>('[data-ambient]');
+  if (ambient && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    ambient.removeAttribute('autoplay');
+    ambient.pause();
+  }
+
+  // Click-to-play clips; only one plays at a time.
+  const clips = Array.from(document.querySelectorAll<HTMLElement>('.clip'));
+  const stopOthers = (current: HTMLVideoElement) => {
+    clips.forEach((clip) => {
+      const video = clip.querySelector<HTMLVideoElement>('[data-clip]');
+      if (video && video !== current && !video.paused) video.pause();
+    });
+  };
+  clips.forEach((clip) => {
+    const video = clip.querySelector<HTMLVideoElement>('[data-clip]');
+    const button = clip.querySelector<HTMLButtonElement>('[data-play]');
+    if (!video || !button) return;
+    button.addEventListener('click', () => {
+      stopOthers(video);
+      video.controls = true;
+      clip.classList.add('is-playing');
+      video.play().catch(() => {});
+    });
+    video.addEventListener('play', () => stopOthers(video));
+  });
+</script>

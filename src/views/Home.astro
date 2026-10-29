@@ -22,7 +22,7 @@ const { lang } = Astro.props;
 const t = ui[lang].home;
 const href = (path: string) => localizePath(path, lang);
 const products = getProducts(lang);
-const editorial = [photos.railSpray, photos.railFlip, photos.snowfall];
+const editorial = [photos.streetRail, photos.railSpray, photos.snowfall];
 
 const schema = [
   itemListSchema(products.map((p) => ({ name: p.name, path: href(`/product/${p.id}`) }))),

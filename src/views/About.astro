@@ -5,6 +5,7 @@ import Photo from '../components/Photo.astro';
 import Newsletter from '../components/Newsletter.astro';
 import Icon from '../components/Icon.astro';
 import { photos, photoCredits } from '../data/photos';
+import { clips, pexelsVideoUrl } from '../data/videos';
 import { site } from '../data/site';
 import { breadcrumbSchema, webPageSchema } from '../lib/schema';
 import { localizePath, type Lang } from '../i18n';
@@ -95,6 +96,23 @@ const schema = [breadcrumbSchema(crumbs), webPageSchema('AboutPage', t.crumb, hr
                 </a>
               </>
             ))}
+          </li>
+        ))
+      }
+      {
+        [...new Set(clips.map((c) => c.credit))].map((credit) => (
+          <li>
+            {credit} –{' '}
+            {clips
+              .filter((c) => c.credit === credit)
+              .map((c, i) => (
+                <>
+                  {i > 0 && ', '}
+                  <a href={pexelsVideoUrl(c.pexelsId)} rel="noopener">
+                    {c.title[lang]}
+                  </a>
+                </>
+              ))}
           </li>
         ))
       }

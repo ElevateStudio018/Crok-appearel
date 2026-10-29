@@ -8,32 +8,7 @@
 [functions]
   node_bundler = "esbuild"
 
-# Pages from the old site that no longer exist.
-[[redirects]]
-  from = "/team"
-  to = "/about"
-  status = 301
-
-[[redirects]]
-  from = "/videos"
-  to = "/about"
-  status = 301
-
-[[redirects]]
-  from = "/backstage"
-  to = "/about"
-  status = 301
-
-[[redirects]]
-  from = "/mailing-list"
-  to = "/#newsletter"
-  status = 301
-
-[[redirects]]
-  from = "/info"
-  to = "/policies"
-  status = 301
-
+# Old checkout return URL from the previous site.
 [[redirects]]
   from = "/checkout/return"
   to = "/checkout/success"
@@ -49,6 +24,11 @@
   for = "/_astro/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/videos/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
 
 [[headers]]
   for = "/*"

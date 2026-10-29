@@ -1,0 +1,280 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Photo from '../components/Photo.astro';
+import { photos } from '../data/photos';
+import { breadcrumbSchema, webPageSchema } from '../lib/schema';
+import { localizePath, type Lang } from '../i18n';
+import { fill, ui } from '../i18n/ui';
+import puffLabel from '../assets/products/cork-3-puff-label.jpg';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang].team;
+const f = ui[lang].forms;
+const href = (path: string) => localizePath(path, lang);
+
+const crumbs = [
+  { name: ui[lang].meta.home, path: href('/') },
+  { name: t.crumb, path: href('/team') },
+];
+const schema = [breadcrumbSchema(crumbs), webPageSchema('AboutPage', t.heading, href('/team'), lang)];
+
+const rolePhotos = [photos.railSpray, photos.snowfall];
+const gallery = [photos.idreSunset, photos.parkRail, photos.parkBox];
+---
+
+<BaseLayout lang={lang} title={t.title} description={t.description} schema={schema}>
+  <Breadcrumbs lang={lang} items={crumbs} />
+
+  <section class="container team-hero" aria-labelledby="team-title">
+    <div class="team-hero-copy">
+      <span class="eyebrow muted">{t.eyebrow}</span>
+      <h1 id="team-title" class="display">{t.heading}</h1>
+      <p class="lead">{t.lead}</p>
+      <a class="btn" href="#apply">{t.applyTitle}</a>
+    </div>
+    <figure class="photo-frame team-hero-media">
+      <Photo photo={photos.streetRail} lang={lang} widths={[640, 960, 1440, 1920]} sizes="(max-width: 860px) 100vw, 55vw" loading="eager" />
+    </figure>
+  </section>
+
+  <section class="section section--dark" aria-labelledby="roles-title">
+    <div class="container">
+      <h2 id="roles-title" class="h2 roles-title">{t.rolesTitle}</h2>
+      <ul role="list" class="roles">
+        {
+          t.roles.map((role, i) => (
+            <li class="role">
+              <figure class="photo-frame role-media">
+                {rolePhotos[i] ? (
+                  <Photo photo={rolePhotos[i]} lang={lang} widths={[400, 640, 960]} sizes="(max-width: 860px) 100vw, 33vw" />
+                ) : (
+                  <Image src={puffLabel} alt={ui[lang].backstage.details[3].text} widths={[400, 640, 960]} sizes="(max-width: 860px) 100vw, 33vw" />
+                )}
+              </figure>
+              <h3 class="h3">{role.title}</h3>
+              <p>{role.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section container" aria-labelledby="profiles-title">
+    <header class="profiles-head">
+      <h2 id="profiles-title" class="h2">{t.profilesTitle}</h2>
+      <p class="muted">{t.profilesText} <a href="#apply">{t.applyTitle}</a></p>
+    </header>
+    <div class="team-gallery" aria-label={t.galleryLabel}>
+      {
+        gallery.map((photo) => (
+          <figure class="photo-frame">
+            <Photo photo={photo} lang={lang} widths={[400, 640, 960]} sizes="(max-width: 760px) 100vw, 33vw" />
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section section--surface" id="apply" aria-labelledby="apply-title">
+    <div class="container apply">
+      <div class="apply-copy">
+        <span class="eyebrow muted">{t.applyEyebrow}</span>
+        <h2 id="apply-title" class="h2">{t.applyTitle}</h2>
+        <p class="lead">{t.applyLead}</p>
+      </div>
+      <form
+        class="apply-form"
+        name="team"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        data-ajax-form
+        data-msg-sending={f.sending}
+        data-msg-success={t.success}
+        data-msg-error={f.error}
+      >
+        <input type="hidden" name="form-name" value="team" />
+        <input type="hidden" name="language" value={lang} />
+        <p class="hp" aria-hidden="true">
+          <label>{f.honeypot} <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
+        </p>
+        <div class="field-row">
+          <div class="field">
+            <label for="team-name">{t.name}</label>
+            <input id="team-name" class="input" name="name" required maxlength="100" autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="team-email">{t.email}</label>
+            <input id="team-email" class="input" name="email" type="email" required maxlength="255" autocomplete="email" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="team-role">{t.role}</label>
+            <select id="team-role" class="input" name="role">
+              {t.roleOptions.map((o) => <option>{o}</option>)}
+            </select>
+          </div>
+          <div class="field">
+            <label for="team-handle">{t.handle} <span class="muted">{t.optional}</span></label>
+            <input id="team-handle" class="input" name="handle" maxlength="100" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="team-home">{t.home}</label>
+          <input id="team-home" class="input" name="home" maxlength="100" />
+        </div>
+        <div class="field">
+          <label for="team-link">{t.link}</label>
+          <input id="team-link" class="input" name="link" type="url" required maxlength="500" placeholder="https://" />
+        </div>
+        <div class="field">
+          <label for="team-message">{t.message} <span class="muted">{t.optional}</span></label>
+          <textarea id="team-message" class="input" name="message" maxlength="2000"></textarea>
+        </div>
+        <button class="btn" type="submit">{t.submit}</button>
+        <p class="form-status" role="status" aria-live="polite" data-form-status></p>
+        <p class="muted small" set:html={fill(t.privacy, { privacy: href('/policies#privacy') })} />
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .team-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: end;
+    gap: clamp(24px, 5vw, 72px);
+    padding-block: clamp(16px, 3vw, 40px) var(--section);
+  }
+
+  .team-hero-copy {
+    display: grid;
+    justify-items: start;
+    gap: 20px;
+  }
+
+  .team-hero-media {
+    aspect-ratio: 3 / 2;
+  }
+
+  .roles-title {
+    margin-bottom: clamp(32px, 4vw, 56px);
+  }
+
+  .roles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 40px);
+  }
+
+  .role {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+  }
+
+  .role p {
+    color: var(--on-dark-muted);
+  }
+
+  .role-media {
+    aspect-ratio: 4 / 5;
+    margin-bottom: 6px;
+  }
+
+  .role-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profiles-head {
+    display: grid;
+    gap: 12px;
+    margin-bottom: clamp(24px, 3vw, 40px);
+    max-width: 44em;
+  }
+
+  .team-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(12px, 1.6vw, 24px);
+  }
+
+  .team-gallery figure {
+    aspect-ratio: 4 / 5;
+  }
+
+  .apply {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: clamp(32px, 6vw, 96px);
+    align-items: start;
+  }
+
+  .apply-copy {
+    display: grid;
+    gap: 16px;
+  }
+
+  .apply-form {
+    display: grid;
+    gap: 20px;
+    padding: clamp(20px, 3vw, 40px);
+    background: var(--bg);
+  }
+
+  .apply-form .btn {
+    justify-self: start;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  select.input {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position:
+      calc(100% - 22px) 50%,
+      calc(100% - 17px) 50%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 44px;
+  }
+
+  .small {
+    font-size: 0.8125rem;
+  }
+
+  @media (max-width: 860px) {
+    .team-hero,
+    .roles,
+    .apply {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .team-gallery,
+    .field-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { initAjaxForms } from '../scripts/forms';
+  initAjaxForms();
+</script>
