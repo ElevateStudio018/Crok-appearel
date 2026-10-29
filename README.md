@@ -27,7 +27,7 @@ To update it:
 1. `npm run preview:githack` and commit `preview/`
 2. `npm run preview:pin` and commit again
 
-githack passes images, videos and fonts on to raw.githubusercontent.com, which rate-limits shared connections such as mobile networks, so photos can go missing. The second pass points those files at jsDelivr, pinned to the commit from step 1. Swap the branch name in the URL for other branches. The preview is `noindex`, and checkout and forms only work on Netlify.
+githack passes images, videos and fonts on to raw.githubusercontent.com, which rate-limits shared connections such as mobile networks, so photos can go missing. The second pass points those files at jsDelivr, pinned to the commit from step 1. Swap the branch name in the URL for other branches. Right after a push githack can serve a cached copy of a page for a few minutes; put the commit hash in place of the branch name to see the newest version straight away. The preview is `noindex`, and checkout and forms only work on Netlify.
 
 ## Languages (EN / SV)
 
