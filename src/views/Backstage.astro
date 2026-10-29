@@ -43,7 +43,7 @@ const schema = [breadcrumbSchema(crumbs), webPageSchema('WebPage', t.heading, hr
 
   <figure class="container bs-hero">
     <div class="photo-frame bs-hero-frame">
-      <Photo photo={photos.parkBox} lang={lang} widths={[640, 960, 1440, 2000]} sizes="100vw" loading="eager" />
+      <Photo photo={photos.streetRail} lang={lang} widths={[640, 960, 1440, 2000]} sizes="100vw" loading="eager" />
     </div>
   </figure>
 
@@ -128,7 +128,11 @@ const schema = [breadcrumbSchema(crumbs), webPageSchema('WebPage', t.heading, hr
   }
 
   .bs-hero-frame {
-    aspect-ratio: 21 / 9;
+    aspect-ratio: 16 / 9;
+  }
+
+  .bs-hero-frame :global(img) {
+    object-position: 50% 40%;
   }
 
   .bs-section-title {

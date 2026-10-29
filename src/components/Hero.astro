@@ -11,23 +11,16 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = ui[lang].home;
+
+// The three photos CORK picked, as a mosaic: one tall, two stacked.
+const tiles = [
+  { photo: photos.railSlide, class: 'tile-main', widths: [360, 540, 720, 960, 1280], sizes: '(min-width: 861px) 30vw, 60vw' },
+  { photo: photos.streetRail, class: 'tile-top', widths: [240, 360, 540, 720, 960], sizes: '(min-width: 861px) 30vw, 40vw' },
+  { photo: photos.swissTrick, class: 'tile-bottom', widths: [240, 360, 540, 720, 960], sizes: '(min-width: 861px) 30vw, 40vw' },
+];
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <div class="hero-media">
-    <Picture
-      src={photos.hero.src}
-      alt={photos.hero.alt[lang]}
-      formats={['avif', 'webp']}
-      widths={[480, 720, 960, 1280, 1600]}
-      sizes="(min-width: 861px) 50vw, 100vw"
-      quality={70}
-      loading="eager"
-      fetchpriority="high"
-      class:list={[photos.hero.mono && 'is-mono']}
-    />
-  </div>
-
   <div class="hero-copy">
     <span class="eyebrow">{t.heroEyebrow}</span>
     <h1 id="hero-title" class="hero-title" set:html={t.heroTitle} />
@@ -37,39 +30,38 @@ const t = ui[lang].home;
       <a class="btn btn--outline-light" href={localizePath('/about', lang)}>{t.heroStory}</a>
     </div>
   </div>
+
+  <div class="hero-media">
+    {
+      tiles.map((tile) => (
+        <div class:list={['hero-tile', tile.class]}>
+          <Picture
+            src={tile.photo.src}
+            alt={tile.photo.alt[lang]}
+            formats={['avif', 'webp']}
+            widths={tile.widths}
+            sizes={tile.sizes}
+            quality={70}
+            loading="eager"
+            fetchpriority={tile.class === 'tile-main' ? 'high' : 'auto'}
+            class:list={[tile.photo.mono && 'is-mono']}
+          />
+        </div>
+      ))
+    }
+  </div>
 </section>
 
 <style>
   .hero {
-    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     min-height: min(calc(100svh - var(--header-h) - 34px), 900px);
     background: var(--dark);
     color: var(--on-dark);
   }
 
-  .hero-media {
-    position: relative;
-    grid-column: 2;
-    grid-row: 1;
-    overflow: hidden;
-  }
-
-  .hero-media :global(img) {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 35%;
-  }
-
   .hero-copy {
-    position: relative;
-    z-index: 1;
-    grid-column: 1;
-    grid-row: 1;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -79,7 +71,7 @@ const t = ui[lang].home;
   }
 
   .hero-title {
-    font-size: clamp(2.75rem, 4.3vw, 4.75rem);
+    font-size: clamp(2.25rem, 3.4vw, 4.25rem);
     font-weight: 800;
     font-stretch: 125%;
     line-height: 0.92;
@@ -101,32 +93,65 @@ const t = ui[lang].home;
     margin-top: 6px;
   }
 
+  .hero-media {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .hero-tile {
+    position: relative;
+    overflow: hidden;
+    background: #1a1a1a;
+  }
+
+  .tile-main {
+    grid-row: 1 / span 2;
+  }
+
+  .hero-tile :global(picture) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-tile :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .tile-main :global(img) {
+    object-position: 45% 50%;
+  }
+
+  .tile-top :global(img) {
+    object-position: 50% 30%;
+  }
+
+  .tile-bottom :global(img) {
+    object-position: 62% 50%;
+  }
+
   @media (max-width: 860px) {
     .hero {
       grid-template-columns: minmax(0, 1fr);
-      min-height: calc(100svh - var(--header-h) - 34px);
+      min-height: 0;
     }
 
     .hero-media {
-      position: absolute;
-      inset: 0;
-      grid-column: auto;
-    }
-
-    .hero-media::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(0deg, rgba(10, 10, 10, 0.9) 0%, rgba(10, 10, 10, 0.4) 45%, rgba(10, 10, 10, 0) 75%);
-    }
-
-    .hero-media :global(img) {
-      object-position: 50% 25%;
+      grid-row: 1;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      aspect-ratio: 1 / 1;
+      gap: 3px;
     }
 
     .hero-copy {
-      grid-column: 1;
-      padding-block: 40px;
+      gap: 18px;
+      padding-block: 32px 40px;
     }
 
     .hero-title {

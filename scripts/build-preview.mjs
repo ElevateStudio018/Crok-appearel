@@ -4,10 +4,17 @@
 // - root-relative URLs ("/shop", "/_astro/x.css") become relative ("shop.html", "../_astro/x.css")
 // - page links get their .html file name, since githack has no pretty URLs
 // - every page gets noindex so the preview never competes with wearcork.shop
+// - images, videos and fonts that are already committed load from jsDelivr, pinned
+//   to that commit: githack hands binary files on to raw.githubusercontent.com,
+//   which rate-limits shared connections (mobile networks), so they can fail to load
 //
 // Usage: npm run preview:githack  (builds first, then runs this script)
+// New or changed images are not committed yet on the first run, so they fall back
+// to githack. Commit, run `npm run preview:pin` and commit again to pin them too.
 // Checkout and forms need Netlify and do not work in the preview.
 
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { cpSync, existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -41,11 +48,51 @@ const toFile = (url) => {
 
 const isRootPath = (url) => url.startsWith('/') && !url.startsWith('//');
 
+const cdnRepo = 'ElevateStudio018/Crok-appearel';
+const binary = /\.(avif|webp|png|jpe?g|gif|ico|mp4|webm|woff2?)$/i;
+
+// Blob ids of the preview files in HEAD, to tell which output files jsDelivr can serve.
+const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+let commit = '';
+const committed = new Map();
+try {
+  commit = git('rev-parse', 'HEAD').trim();
+  for (const line of git('ls-tree', '-r', commit, '--', 'preview').split('\n')) {
+    const m = line.match(/^\d+ blob ([0-9a-f]+)\t(.+)$/);
+    if (m) committed.set(m[2], m[1]);
+  }
+} catch {
+  console.warn('No git history found – all files are served by githack.');
+}
+
+const blobId = (file) => {
+  const data = readFileSync(file);
+  return createHash('sha1').update(`blob ${data.length}\0`).update(data).digest('hex');
+};
+
+const cdnFiles = new Map();
+/** "_astro/a.avif" -> jsDelivr URL if HEAD has the exact same file, otherwise null */
+const cdnUrl = (file) => {
+  const [, path, rest = ''] = file.match(/^([^?#]*)(.*)$/);
+  if (!binary.test(path)) return null;
+  if (!cdnFiles.has(path)) {
+    const key = `preview/${path}`;
+    const local = join(out, path);
+    const same = committed.has(key) && existsSync(local) && committed.get(key) === blobId(local);
+    cdnFiles.set(path, same ? `https://cdn.jsdelivr.net/gh/${cdnRepo}@${commit}/${key}` : null);
+  }
+  const url = cdnFiles.get(path);
+  return url && url + rest;
+};
+
 let pages = 0;
 for (const file of walk(out)) {
   if (file.endsWith('.css')) {
     // CSS lives in _astro/, next to the fonts it references.
-    const css = readFileSync(file, 'utf8').replace(/url\(\/_astro\//g, 'url(./');
+    const css = readFileSync(file, 'utf8').replace(
+      /url\(\/_astro\/([^)]+)\)/g,
+      (_, name) => `url(${cdnUrl(`_astro/${name}`) ?? `./${name}`})`,
+    );
     writeFileSync(file, css);
     continue;
   }
@@ -53,7 +100,11 @@ for (const file of walk(out)) {
 
   const depth = relative(out, dirname(file)).split(sep).filter(Boolean).length;
   const prefix = depth ? '../'.repeat(depth) : './';
-  const rel = (url) => (isRootPath(url) ? prefix + toFile(url) : url);
+  const rel = (url) => {
+    if (!isRootPath(url)) return url;
+    const file = toFile(url);
+    return cdnUrl(file) ?? prefix + file;
+  };
 
   let html = readFileSync(file, 'utf8');
   html = html
@@ -80,4 +131,10 @@ for (const file of walk(out)) {
 }
 
 writeFileSync(join(out, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
+const urls = [...cdnFiles.values()];
+const pinned = urls.filter(Boolean).length;
 console.log(`preview/ ready: ${pages} pages rewritten for sub-folder hosting.`);
+console.log(`${pinned} of ${urls.length} images, videos and fonts load from jsDelivr @ ${commit.slice(0, 7) || '–'}.`);
+if (pinned < urls.length) {
+  console.log('The rest are new or changed: commit preview/, then run `npm run preview:pin` and commit again.');
+}

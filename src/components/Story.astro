@@ -1,7 +1,7 @@
 ---
 import Photo from './Photo.astro';
 import Icon from './Icon.astro';
-import { photos } from '../data/photos';
+import { photos as allPhotos, type Photo as PhotoData } from '../data/photos';
 import { localizePath, type Lang } from '../i18n';
 import { ui } from '../i18n/ui';
 
@@ -10,9 +10,17 @@ interface Props {
   /** Unique id prefix when the block appears on a page with other headings. */
   id?: string;
   showLink?: boolean;
+  /** Three photos make a collage (one tall, two stacked); one photo is shown on its own. */
+  photos?: PhotoData[];
 }
 
-const { lang, id = 'story', showLink = true } = Astro.props;
+const {
+  lang,
+  id = 'story',
+  showLink = true,
+  photos = [allPhotos.railSlide, allPhotos.streetRail, allPhotos.swissTrick],
+} = Astro.props;
+const single = photos.length === 1;
 const t = ui[lang].story;
 ---
 
@@ -33,17 +41,26 @@ const t = ui[lang].story;
       }
     </div>
 
-    <div class="story-collage" role="group" aria-label={t.imagesLabel}>
-      <figure class="photo-frame collage-tall">
-        <Photo photo={photos.railSlide} lang={lang} widths={[400, 640, 960, 1280]} sizes="(max-width: 860px) 50vw, 30vw" />
-      </figure>
-      <figure class="photo-frame collage-top">
-        <Photo photo={photos.streetRail} lang={lang} widths={[400, 640, 960]} sizes="(max-width: 860px) 50vw, 30vw" />
-      </figure>
-      <figure class="photo-frame collage-bottom">
-        <Photo photo={photos.swissTrick} lang={lang} widths={[400, 640, 960]} sizes="(max-width: 860px) 50vw, 30vw" />
-      </figure>
-    </div>
+    {
+      single ? (
+        <figure class="photo-frame story-single">
+          <Photo photo={photos[0]} lang={lang} widths={[480, 720, 960, 1280]} sizes="(max-width: 860px) 100vw, 55vw" />
+        </figure>
+      ) : (
+        <div class="story-collage" role="group" aria-label={t.imagesLabel}>
+          {photos.slice(0, 3).map((photo, i) => (
+            <figure class:list={['photo-frame', ['collage-tall', 'collage-top', 'collage-bottom'][i]]}>
+              <Photo
+                photo={photo}
+                lang={lang}
+                widths={i === 0 ? [400, 640, 960, 1280] : [400, 640, 960]}
+                sizes="(max-width: 860px) 50vw, 30vw"
+              />
+            </figure>
+          ))}
+        </div>
+      )
+    }
   </div>
 </section>
 
@@ -88,6 +105,15 @@ const t = ui[lang].story;
     grid-row: 1 / span 2;
   }
 
+  .story-single {
+    margin: 0;
+    aspect-ratio: 1 / 1;
+  }
+
+  .story-single :global(img) {
+    object-position: 50% 45%;
+  }
+
   .collage-bottom :global(img) {
     object-position: 60% 55%;
   }
@@ -99,6 +125,10 @@ const t = ui[lang].story;
 
     .story-collage {
       aspect-ratio: 1 / 1;
+    }
+
+    .story-single {
+      aspect-ratio: 4 / 5;
     }
   }
 </style>

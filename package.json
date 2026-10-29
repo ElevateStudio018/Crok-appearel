@@ -9,7 +9,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "preview:githack": "astro build && node scripts/build-preview.mjs"
+    "preview:githack": "astro build && node scripts/build-preview.mjs",
+    "preview:pin": "node scripts/build-preview.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

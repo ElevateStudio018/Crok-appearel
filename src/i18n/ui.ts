@@ -110,8 +110,6 @@ const en = {
       { value: '90/10', label: 'Down fill', detail: 'CORK 3 Puff Jacket' },
       { value: '25', label: 'Pieces per style', detail: 'The full CORK 3 run' },
     ],
-    editorialTitle: 'Nights on the rail.<br /> Days in the city.',
-    editorialCta: 'Shop CORK 3',
   },
   shop: {
     crumb: 'Shop',
@@ -319,7 +317,6 @@ const en = {
     submit: 'Send application',
     success: 'Thanks – your application is sent.',
     privacy: 'We only use your details to review your application. See our <a href="{privacy}">privacy policy</a>.',
-    galleryLabel: 'On the hill',
   },
   backstage: {
     crumb: 'Backstage',
@@ -557,8 +554,6 @@ const sv: UI = {
       { value: '90/10', label: 'Dunfyllning', detail: 'CORK 3 Puff Jacket' },
       { value: '25', label: 'Exemplar per modell', detail: 'Hela CORK 3-upplagan' },
     ],
-    editorialTitle: 'Kvällar på railen.<br /> Dagar i stan.',
-    editorialCta: 'Shoppa CORK 3',
   },
   shop: {
     crumb: 'Shop',
@@ -766,7 +761,6 @@ const sv: UI = {
     submit: 'Skicka ansökan',
     success: 'Tack – din ansökan är skickad.',
     privacy: 'Vi använder bara dina uppgifter för att gå igenom din ansökan. Läs vår <a href="{privacy}">integritetspolicy</a>.',
-    galleryLabel: 'I backen',
   },
   backstage: {
     crumb: 'Backstage',

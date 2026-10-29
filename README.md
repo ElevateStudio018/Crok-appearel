@@ -22,7 +22,12 @@ The `preview/` folder is a copy of the built site with relative links, so it can
 - English: https://raw.githack.com/ElevateStudio018/Crok-appearel/claude/magical-cerf-5pjzkw/preview/index.html
 - Swedish: https://raw.githack.com/ElevateStudio018/Crok-appearel/claude/magical-cerf-5pjzkw/preview/sv.html
 
-Run `npm run preview:githack` and commit `preview/` to update it (swap the branch name in the URL for other branches). The preview is `noindex`, and checkout and forms only work on Netlify.
+To update it:
+
+1. `npm run preview:githack` and commit `preview/`
+2. `npm run preview:pin` and commit again
+
+githack passes images, videos and fonts on to raw.githubusercontent.com, which rate-limits shared connections such as mobile networks, so photos can go missing. The second pass points those files at jsDelivr, pinned to the commit from step 1. Swap the branch name in the URL for other branches. The preview is `noindex`, and checkout and forms only work on Netlify.
 
 ## Languages (EN / SV)
 
@@ -99,7 +104,7 @@ The menu follows the original site: Videos, Shop, Team, About, Backstage, Mailin
 ## Images
 
 - **Product photos** are CORK's own photos from the previous site.
-- **Editorial photos** come from [Pexels](https://www.pexels.com/license/) (free to use commercially, no attribution required). The files are the colour originals; `mono` in `photos.ts` decides whether a photo is shown in black and white. All photographers are credited on `/about#credits`.
+- **Editorial photos** are the four CORK picked in the image picker – Pexels 15751550, 15897059, 25400943 and 15751546 – all shown in black and white. They come from [Pexels](https://www.pexels.com/license/) (free to use commercially, no attribution required). The files are the colour originals; `mono` in `photos.ts` decides whether a photo is shown in black and white. All photographers are credited on `/about#credits`.
 - **Videos** on `/videos` are Pexels clips (Alex Moliski, Rob Bouchat), re-encoded to 720p without sound (about 1–2 MB each) and credited on every clip.
 - The previous site's AI-generated images (fisheye skier, the "cork workshop") have been removed.
 

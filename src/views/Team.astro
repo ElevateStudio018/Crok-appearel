@@ -24,8 +24,7 @@ const crumbs = [
 ];
 const schema = [breadcrumbSchema(crumbs), webPageSchema('AboutPage', t.heading, href('/team'), lang)];
 
-const rolePhotos = [photos.railSpray, photos.snowfall];
-const gallery = [photos.idreSunset, photos.parkRail, photos.parkBox];
+const rolePhotos = [photos.railSlide, photos.swissTrick];
 ---
 
 <BaseLayout lang={lang} title={t.title} description={t.description} schema={schema}>
@@ -71,15 +70,6 @@ const gallery = [photos.idreSunset, photos.parkRail, photos.parkBox];
       <h2 id="profiles-title" class="h2">{t.profilesTitle}</h2>
       <p class="muted">{t.profilesText} <a href="#apply">{t.applyTitle}</a></p>
     </header>
-    <div class="team-gallery" aria-label={t.galleryLabel}>
-      {
-        gallery.map((photo) => (
-          <figure class="photo-frame">
-            <Photo photo={photo} lang={lang} widths={[400, 640, 960]} sizes="(max-width: 760px) 100vw, 33vw" />
-          </figure>
-        ))
-      }
-    </div>
   </section>
 
   <section class="section section--surface" id="apply" aria-labelledby="apply-title">
@@ -200,18 +190,7 @@ const gallery = [photos.idreSunset, photos.parkRail, photos.parkBox];
   .profiles-head {
     display: grid;
     gap: 12px;
-    margin-bottom: clamp(24px, 3vw, 40px);
     max-width: 44em;
-  }
-
-  .team-gallery {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(12px, 1.6vw, 24px);
-  }
-
-  .team-gallery figure {
-    aspect-ratio: 4 / 5;
   }
 
   .apply {
@@ -267,7 +246,6 @@ const gallery = [photos.idreSunset, photos.parkRail, photos.parkBox];
   }
 
   @media (max-width: 560px) {
-    .team-gallery,
     .field-row {
       grid-template-columns: 1fr;
     }
