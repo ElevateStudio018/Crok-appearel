@@ -61,6 +61,8 @@ src/
 netlify/functions/checkout.mts   Creates the Stripe Checkout session
 public/og/       Share images (1200×630, Swedish in og/sv/) – regenerate with node scripts/generate-og.cjs
 scripts/build-preview.mjs        Writes preview/ for githack
+scripts/mascot-art.py            Builds the mascot SVG and the 3D cork's face from design/cork-mascot.webp
+design/          Source artwork (not part of the site build)
 preview/         Generated githack preview – do not edit by hand
 ```
 
@@ -76,7 +78,8 @@ preview/         Generated githack preview – do not edit by hand
 | Menu and footer links | `nav` and `footerNav` in `src/data/site.ts` |
 | Swap a photo | `src/data/photos.ts` (put a black and white JPG in `src/assets/photos/`) |
 | Add or remove a team rider, add their Instagram | `src/data/team.ts` |
-| Loading animation (the jumping cork) | `src/components/Loader.astro` + `src/scripts/loader.ts`. It shows on the first page of a visit and while the cart waits for Stripe; add `?loader` to any URL to see it again |
+| Loading animation (the jumping cork) | `src/components/Loader.astro` + `src/scripts/loader.ts`, the 3D cork in `src/scripts/cork3d.ts`. It shows on the first page of a visit and while the cart waits for Stripe; add `?loader` to any URL to watch it until you tap it |
+| Mascot artwork | Replace `design/cork-mascot.webp` and run `python scripts/mascot-art.py` – it rebuilds the flat mascot SVG and the face texture of the 3D cork |
 | Add or replace a video | `src/data/videos.ts` + an H.264 MP4 and a poster in `public/videos/` |
 | New product | Add it to `catalog.ts` + `products.ts` and put its images in `src/assets/products/` |
 

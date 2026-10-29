@@ -7,6 +7,7 @@ const en = {
   meta: {
     skip: 'Skip to content',
     loading: 'Loading CORK',
+    loaderClose: 'Tap to close',
     homeLabel: 'CORK – home',
     breadcrumb: 'Breadcrumb',
     home: 'Home',
@@ -454,6 +455,7 @@ const sv: UI = {
   meta: {
     skip: 'Hoppa till innehållet',
     loading: 'Laddar CORK',
+    loaderClose: 'Tryck för att stänga',
     homeLabel: 'CORK – startsida',
     breadcrumb: 'Brödsmulor',
     home: 'Hem',

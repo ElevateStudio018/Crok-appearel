@@ -12,13 +12,16 @@ const { lang } = Astro.props;
 
 <!--
   The CORK mascot jumping around and landing a cork spin while the page loads.
-  Shown on the first page of a visit (add ?loader to any URL to see it again) and
-  while the cart waits for Stripe. Hidden again by src/scripts/loader.ts.
+  Shown on the first page of a visit and while the cart waits for Stripe; ?loader on
+  any URL shows it until you tap it. src/scripts/loader.ts draws the cork in 3D
+  (src/scripts/cork3d.ts) and hides the loader again. The flat cork below is the
+  fallback without WebGL and the version for reduced motion.
 -->
 <template id="cork-loader">
-  <div class="loader" role="status">
+  <div class="loader" role="status" data-close={ui[lang].meta.loaderClose}>
     <span class="visually-hidden">{ui[lang].meta.loading}</span>
     <div class="loader-stage" aria-hidden="true">
+      <canvas class="loader-canvas"></canvas>
       <div class="loader-track">
         <span class="loader-shadow"></span>
         <div class="loader-jump">
@@ -34,13 +37,16 @@ const { lang } = Astro.props;
 </template>
 <script is:inline>
   (function () {
+    var preview = /[?&]loader\b/.test(location.search);
     try {
-      if (!/[?&]loader\b/.test(location.search) && sessionStorage.getItem('cork-loader-seen')) return;
+      if (!preview && sessionStorage.getItem('cork-loader-seen')) return;
     } catch (e) {
       return;
     }
     var template = document.getElementById('cork-loader');
-    if (template) document.body.prepend(template.content.cloneNode(true));
+    if (!template) return;
+    document.body.prepend(template.content.cloneNode(true));
+    if (preview) document.body.firstElementChild.classList.add('is-preview');
   })();
 </script>
 
@@ -60,18 +66,70 @@ const { lang } = Astro.props;
     animation: loader-leave 0.45s ease forwards;
   }
 
+  /* ?loader: stays until tapped */
+  .loader.is-preview {
+    animation: none;
+    cursor: pointer;
+  }
+
+  .loader.is-preview::after {
+    content: attr(data-close);
+    position: absolute;
+    bottom: max(32px, env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--on-dark-muted);
+  }
+
+  .loader.is-preview.is-leaving {
+    animation: loader-leave 0.45s ease forwards;
+  }
+
   .loader-stage {
     position: relative;
     width: 240px;
     height: 290px;
   }
 
+  /* A bit bigger than the stage, so the cork has room above it for the spin. */
+  .loader-canvas {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 300px;
+    height: 360px;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  .loader.is-3d .loader-canvas {
+    opacity: 1;
+  }
+
+  .loader.is-3d .loader-track {
+    display: none;
+  }
+
   /* One loop (2.6 s): a big jump with a cork spin, then three hops right, left and back. */
+  /* The flat cork waits a moment for the 3D one, and shows by itself if no script decides. */
   .loader-track {
     position: absolute;
     left: 50%;
     bottom: 28px;
-    animation: loader-x 2.6s linear infinite;
+    opacity: 0;
+    animation:
+      loader-x 2.6s linear infinite,
+      loader-show 0.3s ease 1.5s forwards;
+  }
+
+  .loader.is-2d .loader-track {
+    opacity: 1;
   }
 
   .loader-shadow {
@@ -296,6 +354,12 @@ const { lang } = Astro.props;
     }
   }
 
+  @keyframes loader-show {
+    to {
+      opacity: 1;
+    }
+  }
+
   @keyframes loader-pulse {
     to {
       opacity: 0.55;
@@ -303,6 +367,10 @@ const { lang } = Astro.props;
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .loader-track {
+      opacity: 1;
+    }
+
     .loader-track,
     .loader-shadow,
     .loader-jump,
