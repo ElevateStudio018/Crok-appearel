@@ -53,7 +53,7 @@ src/
   i18n/            Language routing helpers and UI strings (EN/SV)
   views/           Page templates shared by both languages
   pages/           One file per URL (/, /shop, /product/[id] …) – Swedish copies under pages/sv/
-  components/      Header, Footer, Hero, ProductCard, Newsletter …
+  components/      Header, Footer, Hero, ProductCard, Newsletter, Loader (jumping cork) …
   layouts/         BaseLayout – <head>, meta tags, Open Graph, JSON-LD
   lib/schema.ts    Structured data (Organization, Product, Breadcrumb, FAQ …)
   scripts/         Cart (localStorage) and form handling in the browser
@@ -76,6 +76,7 @@ preview/         Generated githack preview – do not edit by hand
 | Menu and footer links | `nav` and `footerNav` in `src/data/site.ts` |
 | Swap a photo | `src/data/photos.ts` (put a black and white JPG in `src/assets/photos/`) |
 | Add or remove a team rider, add their Instagram | `src/data/team.ts` |
+| Loading animation (the jumping cork) | `src/components/Loader.astro` + `src/scripts/loader.ts`. It shows on the first page of a visit and while the cart waits for Stripe; add `?loader` to any URL to see it again |
 | Add or replace a video | `src/data/videos.ts` + an H.264 MP4 and a poster in `public/videos/` |
 | New product | Add it to `catalog.ts` + `products.ts` and put its images in `src/assets/products/` |
 

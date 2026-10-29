@@ -6,6 +6,7 @@ import type { Lang } from './index';
 const en = {
   meta: {
     skip: 'Skip to content',
+    loading: 'Loading CORK',
     homeLabel: 'CORK – home',
     breadcrumb: 'Breadcrumb',
     home: 'Home',
@@ -452,6 +453,7 @@ export type UI = typeof en;
 const sv: UI = {
   meta: {
     skip: 'Hoppa till innehållet',
+    loading: 'Laddar CORK',
     homeLabel: 'CORK – startsida',
     breadcrumb: 'Brödsmulor',
     home: 'Hem',

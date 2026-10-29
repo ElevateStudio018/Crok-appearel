@@ -1,0 +1,317 @@
+---
+import Mascot from '../assets/brand/cork-mascot.svg';
+import type { Lang } from '../i18n';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<!--
+  The CORK mascot jumping around and landing a cork spin while the page loads.
+  Shown on the first page of a visit (add ?loader to any URL to see it again) and
+  while the cart waits for Stripe. Hidden again by src/scripts/loader.ts.
+-->
+<template id="cork-loader">
+  <div class="loader" role="status">
+    <span class="visually-hidden">{ui[lang].meta.loading}</span>
+    <div class="loader-stage" aria-hidden="true">
+      <div class="loader-track">
+        <span class="loader-shadow"></span>
+        <div class="loader-jump">
+          <div class="loader-spin">
+            <div class="loader-squash">
+              <Mascot />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script is:inline>
+  (function () {
+    try {
+      if (!/[?&]loader\b/.test(location.search) && sessionStorage.getItem('cork-loader-seen')) return;
+    } catch (e) {
+      return;
+    }
+    var template = document.getElementById('cork-loader');
+    if (template) document.body.prepend(template.content.cloneNode(true));
+  })();
+</script>
+
+<style is:global>
+  .loader {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    background: var(--dark);
+    /* Safety net: fades out by itself if the script that hides it never runs. */
+    animation: loader-leave 0.4s ease 7s forwards;
+  }
+
+  .loader.is-leaving {
+    animation: loader-leave 0.45s ease forwards;
+  }
+
+  .loader-stage {
+    position: relative;
+    width: 240px;
+    height: 290px;
+  }
+
+  /* One loop (2.6 s): a big jump with a cork spin, then three hops right, left and back. */
+  .loader-track {
+    position: absolute;
+    left: 50%;
+    bottom: 28px;
+    animation: loader-x 2.6s linear infinite;
+  }
+
+  .loader-shadow {
+    position: absolute;
+    left: -48px;
+    bottom: -8px;
+    width: 96px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(244 243 239 / 0.24), rgb(244 243 239 / 0));
+    animation: loader-shadow 2.6s infinite;
+  }
+
+  .loader-jump {
+    position: absolute;
+    left: -40px;
+    bottom: 0;
+    width: 80px;
+    perspective: 700px;
+    animation: loader-y 2.6s infinite;
+  }
+
+  .loader-spin {
+    transform-origin: 50% 55%;
+    animation: loader-spin 2.6s infinite;
+  }
+
+  .loader-squash {
+    transform-origin: 50% 100%;
+    animation: loader-squash 2.6s infinite;
+  }
+
+  .loader-squash svg {
+    display: block;
+    width: 80px;
+    height: auto;
+  }
+
+  @keyframes loader-x {
+    0%,
+    38% {
+      transform: translateX(0);
+    }
+    58% {
+      transform: translateX(56px);
+    }
+    79% {
+      transform: translateX(-56px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  /* Up decelerates, down accelerates. */
+  @keyframes loader-y {
+    0%,
+    3% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0.2, 0.75, 0.35, 1);
+    }
+    19.5% {
+      transform: translateY(-124px);
+      animation-timing-function: cubic-bezier(0.65, 0, 0.8, 0.25);
+    }
+    36%,
+    38% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0.2, 0.75, 0.35, 1);
+    }
+    48% {
+      transform: translateY(-42px);
+      animation-timing-function: cubic-bezier(0.65, 0, 0.8, 0.25);
+    }
+    58% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0.2, 0.75, 0.35, 1);
+    }
+    68.5% {
+      transform: translateY(-42px);
+      animation-timing-function: cubic-bezier(0.65, 0, 0.8, 0.25);
+    }
+    79% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0.2, 0.75, 0.35, 1);
+    }
+    89.5% {
+      transform: translateY(-42px);
+      animation-timing-function: cubic-bezier(0.65, 0, 0.8, 0.25);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  /* The cork: an off-axis 360 in the big jump, then a lean into each hop. */
+  @keyframes loader-spin {
+    0%,
+    6% {
+      transform: rotateY(0deg) rotate(0deg);
+      animation-timing-function: cubic-bezier(0.45, 0, 0.3, 1);
+    }
+    32%,
+    38% {
+      transform: rotateY(360deg) rotate(360deg);
+      animation-timing-function: ease-in-out;
+    }
+    48% {
+      transform: rotateY(360deg) rotate(372deg);
+      animation-timing-function: ease-in-out;
+    }
+    58% {
+      transform: rotateY(360deg) rotate(360deg);
+      animation-timing-function: ease-in-out;
+    }
+    68.5% {
+      transform: rotateY(360deg) rotate(348deg);
+      animation-timing-function: ease-in-out;
+    }
+    79% {
+      transform: rotateY(360deg) rotate(360deg);
+      animation-timing-function: ease-in-out;
+    }
+    89.5% {
+      transform: rotateY(360deg) rotate(372deg);
+      animation-timing-function: ease-in-out;
+    }
+    100% {
+      transform: rotateY(360deg) rotate(360deg);
+    }
+  }
+
+  /* Crouch before take-off, stretch on the way up, squash on landing. */
+  @keyframes loader-squash {
+    0%,
+    3% {
+      transform: scale(1.14, 0.84);
+    }
+    7% {
+      transform: scale(0.9, 1.12);
+    }
+    14%,
+    33% {
+      transform: scale(1, 1);
+    }
+    36% {
+      transform: scale(1.16, 0.82);
+    }
+    39.5% {
+      transform: scale(0.94, 1.08);
+    }
+    44%,
+    55.5% {
+      transform: scale(1, 1);
+    }
+    58% {
+      transform: scale(1.1, 0.88);
+    }
+    60.5% {
+      transform: scale(0.95, 1.06);
+    }
+    65%,
+    76.5% {
+      transform: scale(1, 1);
+    }
+    79% {
+      transform: scale(1.1, 0.88);
+    }
+    81.5% {
+      transform: scale(0.95, 1.06);
+    }
+    86%,
+    97% {
+      transform: scale(1, 1);
+    }
+    100% {
+      transform: scale(1.14, 0.84);
+    }
+  }
+
+  @keyframes loader-shadow {
+    0%,
+    3% {
+      transform: scaleX(1.15);
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.2, 0.75, 0.35, 1);
+    }
+    19.5% {
+      transform: scaleX(0.45);
+      opacity: 0.35;
+      animation-timing-function: cubic-bezier(0.65, 0, 0.8, 0.25);
+    }
+    36%,
+    38% {
+      transform: scaleX(1.15);
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.2, 0.75, 0.35, 1);
+    }
+    48%,
+    68.5%,
+    89.5% {
+      transform: scaleX(0.75);
+      opacity: 0.6;
+      animation-timing-function: cubic-bezier(0.65, 0, 0.8, 0.25);
+    }
+    58%,
+    79% {
+      transform: scaleX(1.05);
+      opacity: 1;
+      animation-timing-function: cubic-bezier(0.2, 0.75, 0.35, 1);
+    }
+    100% {
+      transform: scaleX(1.15);
+      opacity: 1;
+    }
+  }
+
+  @keyframes loader-leave {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  @keyframes loader-pulse {
+    to {
+      opacity: 0.55;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loader-track,
+    .loader-shadow,
+    .loader-jump,
+    .loader-spin {
+      animation: none;
+    }
+
+    .loader-squash {
+      animation: loader-pulse 1.2s ease-in-out infinite alternate;
+    }
+  }
+</style>

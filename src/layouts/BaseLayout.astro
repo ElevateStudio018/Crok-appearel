@@ -3,6 +3,7 @@ import '../styles/global.css';
 import fontUrl from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Loader from '../components/Loader.astro';
 import { site } from '../data/site';
 import { organizationSchema, websiteSchema } from '../lib/schema';
 import { languages, langs, localizePath, stripLang, type Lang } from '../i18n';
@@ -96,6 +97,7 @@ const jsonLd = [organizationSchema(lang), websiteSchema(lang), ...schema];
     {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}
   </head>
   <body>
+    <Loader lang={lang} />
     <a class="skip-link" href="#main">{t.meta.skip}</a>
     <Header lang={lang} basePath={basePath} />
     <main id="main">
@@ -105,6 +107,8 @@ const jsonLd = [organizationSchema(lang), websiteSchema(lang), ...schema];
 
     <script>
       import { initCartBadge } from '../scripts/cart';
+      import { initLoader } from '../scripts/loader';
+      initLoader();
       initCartBadge();
     </script>
   </body>

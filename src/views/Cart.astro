@@ -282,6 +282,7 @@ const cartData = {
 
 <script>
   import { getCart, setQty, removeFromCart, onCartChange, MAX_QTY, type CartLine } from '../scripts/cart';
+  import { hideLoader, showLoader } from '../scripts/loader';
 
   interface CartData {
     lang: 'en' | 'sv';
@@ -357,6 +358,7 @@ const cartData = {
     errorEl.textContent = '';
     delete errorEl.dataset.state;
     checkoutBtn.disabled = true;
+    showLoader();
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -373,6 +375,7 @@ const cartData = {
       errorEl.dataset.state = 'error';
       errorEl.textContent = code === 'checkout_not_configured' ? s.notConfigured : s.failed;
       checkoutBtn.disabled = false;
+      hideLoader();
     }
   });
 </script>
