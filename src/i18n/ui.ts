@@ -96,10 +96,6 @@ const en = {
       'CORK is an independent freeski label from Uppsala, Sweden. Pre-order the CORK 3 Baggy Pants and Puff Jacket – limited to 25 pieces each, shipping before 24 December.',
     heroEyebrow: 'CORK 3 Collection — Pre-order now',
     heroTitle: 'Independent<br /> by nature.',
-    heroText:
-      'Technical baggy outerwear from Uppsala, Sweden. Two pieces, 25 of each, made for nights on the rail and days in the city.',
-    heroShop: 'Shop the collection',
-    heroStory: 'Our story',
     shopEyebrow: 'Shop',
     collectionTitle: 'The CORK 3 Collection',
     collectionText: 'Our first collection, named after the trick where it all started. Two pieces in black, made in a run of 25 each.',
@@ -544,10 +540,6 @@ const sv: UI = {
       'CORK är ett självständigt freeski-märke från Uppsala. Förbeställ CORK 3 Baggy Pants och Puff Jacket – begränsat till 25 exemplar per modell, skickas före 24 december.',
     heroEyebrow: 'CORK 3-kollektionen — Förbeställ nu',
     heroTitle: 'Independent<br /> by nature.',
-    heroText:
-      'Teknisk, baggy outerwear från Uppsala. Två plagg i 25 exemplar vardera – gjorda för kvällar på railen och dagar i stan.',
-    heroShop: 'Shoppa kollektionen',
-    heroStory: 'Vår historia',
     shopEyebrow: 'Shop',
     collectionTitle: 'CORK 3-kollektionen',
     collectionText: 'Vår första kollektion, döpt efter tricket där allt började. Två plagg i svart, tillverkade i 25 exemplar vardera.',

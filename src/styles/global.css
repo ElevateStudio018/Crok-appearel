@@ -1,4 +1,4 @@
-@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource-variable/inconsolata/wght.css';
 
 :root {
   --bg: #ffffff;
@@ -13,7 +13,7 @@
   --on-dark-muted: #a7a7a3;
   --focus: #2f6bff;
 
-  --font: 'Archivo Variable', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font: 'Inconsolata Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   --gutter: clamp(16px, 4vw, 48px);
   --max: 1440px;
   --header-h: 64px;
@@ -582,4 +582,67 @@ textarea.input {
   margin-top: 10px;
   font-size: 0.75rem;
   color: var(--muted);
+}
+
+
+/* ---------- Lowkey ----------
+   The capeesh-like tone: one monospace, everything in lower case, regular
+   weights, no wide or tracked-out display type, smaller headings. Kept as one
+   layer so the components keep their own layout rules. */
+
+*,
+*::before,
+*::after {
+  font-stretch: 100% !important;
+  letter-spacing: 0 !important;
+  text-transform: lowercase !important;
+}
+
+body * {
+  font-weight: 400 !important;
+}
+
+h1,
+h2,
+h3,
+.display,
+.h1,
+.h2,
+.h3,
+strong,
+b,
+th {
+  font-weight: 600 !important;
+  line-height: 1.1 !important;
+}
+
+.display {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.h1 {
+  font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+}
+
+.h2 {
+  font-size: clamp(1.375rem, 2.4vw, 2rem);
+}
+
+.h3 {
+  font-size: 1.0625rem;
+}
+
+.eyebrow {
+  font-size: 0.8125rem;
+}
+
+.btn {
+  font-size: 0.9375rem;
+}
+
+/* 16 px min keeps iOS from zooming into form fields */
+input,
+select,
+textarea {
+  font-size: max(16px, 1em);
 }
