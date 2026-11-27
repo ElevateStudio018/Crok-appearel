@@ -140,6 +140,7 @@ body.only-picked .card:not(.is-picked) { display: none; }
 .nav.row { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.3em 1.2em; }
 .nav.row.left { justify-content: flex-start; }
 .nav.idx { display: grid; width: 100%; font-size: 1.2em; }
+.paper .nav.idx, .nav.idx.ink { color: var(--ink); }
 .nav.idx li { border-top: 1px solid currentColor; padding: 0.2em 0; }
 .nav.idx li:last-child { border-bottom: 1px solid currentColor; }
 .note { font-size: 0.85em; text-decoration: underline !important; text-underline-offset: 3px; }
@@ -218,6 +219,21 @@ body.only-picked .card:not(.is-picked) { display: none; }
 .ph.slim { position: absolute; top: 0; bottom: 0; right: 0; width: 28%; }
 @container (max-width: 480px) { .manifest { width: 90%; bottom: 42%; } .ph.slim { top: auto; left: 0; width: auto; height: 36%; } }
 
+/* set 2 extras */
+.s-vign { background: radial-gradient(ellipse at center, rgb(10 10 10 / 0.35), rgb(10 10 10 / 0.8) 85%); }
+.grain { position: absolute; inset: 0; opacity: 0.18; mix-blend-mode: overlay; background-image: repeating-radial-gradient(circle at 17% 32%, #fff 0 1px, transparent 1px 3px), repeating-radial-gradient(circle at 73% 61%, #000 0 1px, transparent 1px 4px); pointer-events: none; }
+.bordered { inset: 7%; border: 1px solid rgb(244 243 239 / 0.7); }
+.corner.tl { position: absolute; top: 5%; left: 5%; max-width: 50%; }
+.bl.right { left: auto; right: 5%; align-items: flex-end; text-align: right; }
+.bl.right .nav.left { justify-content: flex-end; }
+.split.w40 { grid-template-columns: 2fr 3fr; }
+.split.w40.flip, .split.w60.flip { grid-template-columns: 3fr 2fr; }
+.film-nav { position: absolute; left: 0; right: 0; bottom: 0; padding: 0.7em 4%; background: var(--night); }
+.paper .film-nav { background: var(--paper); }
+.m.fam5 .strips { bottom: 2.6em; }
+.strips.paper-gap { background: var(--paper); }
+.intro a { color: var(--ink); }
+
 /* 18: thumbnails */
 .thumbs { display: flex; gap: 6px; }
 .ph.thumb { width: 6em; aspect-ratio: 4 / 5; }
@@ -235,7 +251,7 @@ body.only-picked .card:not(.is-picked) { display: none; }
   <button type="button" id="clear">rensa</button>
   <div class="picks-out" id="out"><input id="picks" readonly aria-label="dina val"><span id="copied"></span></div>
 </div>
-<p class="intro">100 heroes för startsidan, 20 idéer i 5 varianter var. Tryck <b>fet</b> på de du gillar, sedan <b>kopiera mina val</b> och klistra in siffrorna till Claude. Valen sparas i den här webbläsaren. På mobil ser du mobilversionen av varje hero.</p>
+<p class="intro"><!--INTRO--> Tryck <b>fet</b> på de du gillar, sedan <b>kopiera mina val</b> och klistra in siffrorna till Claude. Valen sparas i den här webbläsaren. På mobil ser du mobilversionen av varje hero.</p>
 <main class="grid">
 <!--CARDS-->
 </main>

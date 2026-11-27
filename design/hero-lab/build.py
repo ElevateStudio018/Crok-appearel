@@ -226,29 +226,124 @@ def f20(v):
     return back + f'<div class="center col">{mascot("ms-" + str(v))}{logo("lg-s " + ink)}{menu(menu_kind + " " + ink)}</div>', 'night' if bg == 'photo' else bg
 
 
-cards = []
-n = 0
-for title, fn in F:
-    for v in range(5):
-        n += 1
-        inner, bg = fn(v)
-        cards.append(
-            f'<article class="card" id="h{n}" data-n="{n}">'
-            f'<header><span class="no">{n:03d}</span><span class="title">{title} <em>{"abcde"[v]}</em></span>'
-            f'<button type="button" class="pick" aria-pressed="false" data-n="{n}">fet</button></header>'
-            f'<div class="frame"><div class="m {bg} fam{F.index((title, fn)) + 1}">{inner}</div></div></article>'
-        )
+
+# ---------- set 2: 20 variants each of the five styles CORK liked ----------
+S2 = []
+
+
+def style(title):
+    def wrap(fn):
+        S2.append((title, fn))
+        return fn
+    return wrap
+
+
+P4 = ['slide', 'street', 'swiss', 'jam']
+
+
+@style('ett foto, menyn i mitten')
+def s1(v):
+    p = P4[v % 4]
+    shade = ['s-mid', 's-soft', 's-strong', 's-mid', 's-vign'][v % 5]
+    size = ['lg-m', 'lg-l', 'lg-s', 'lg-m', 'lg-l'][v // 4 % 5]
+    kind = 'stack' if v % 3 != 2 else 'row'
+    extra = note() if v % 2 == 0 else ''
+    frame = ' bordered' if v in (7, 15) else ''
+    grain = '<div class="grain"></div>' if v in (3, 11, 18) else ''
+    return ph(p) + f'<div class="shade {shade}"></div>{grain}<div class="center col{frame}">{logo(size)}{menu(kind)}{extra}</div>', 'night'
+
+
+@style('loggan nere till vänster')
+def s2(v):
+    p = ['street', 'slide', 'jam', 'swiss'][v % 4]
+    big = ['lg-xl', 'lg-xxl', 'lg-full', 'lg-xl', 'lg-xxl'][v // 4 % 5]
+    menu_kind = 'row left' if v % 2 == 0 else 'stack left'
+    corner = [f'<span class="corner tr small">{NOTE}</span>', f'<span class="corner tl small">{LINE}</span>', '', f'<span class="corner tr small">25 ex per modell</span>'][v % 4]
+    side = ' right' if v in (5, 9, 13, 17) else ''
+    return ph(p) + f'<div class="shade s-bottom"></div>{corner}<div class="bl col start{side}">{logo(big)}{menu(menu_kind)}</div>', 'night'
+
+
+@style('papper och foto')
+def s3(v):
+    p = P4[v % 4]
+    flip = ' flip' if (v // 4) % 2 else ''
+    ratio = ['', ' w60', ' w40', '', ' w60'][v // 4 % 5]
+    bg = 'paper' if v % 5 != 4 else 'night'
+    ink = ' ink' if bg == 'paper' else ''
+    txt = [LINE, 'cork 3 — två plagg, 25 av varje.', 'uppsala, sverige.', LINE][v % 4]
+    menu_kind = 'stack left' if v % 3 else 'idx'
+    pane = 'paper' if bg == 'paper' else ''
+    return f'<div class="split{ratio}{flip}"><div class="pane {pane} col start between">{logo("lg-s" + ink)}{menu(menu_kind + ink)}<p class="small muted-ink">{txt}</p></div>{ph(p, "pane")}</div>', bg
+
+
+@style('zine')
+def s4(v):
+    p = P4[v % 4]
+    shape = ['r43', 'r45', 'r11', 'r169', 'r34'][v % 5]
+    bg = 'paper' if v < 14 else 'night'
+    ink = ' ink' if bg == 'paper' else ''
+    cap = f'<figcaption class="{"" if bg == "paper" else "on"}">fig. {v + 1} — {p}</figcaption>'
+    order = v % 3
+    fig = f'<figure class="fig">{ph(p, "frame " + shape)}{cap}</figure>'
+    lg = logo('lg-s' + ink)
+    line = f'<p class="line{ink}">{LINE}</p>'
+    nav = menu('row' + ink)
+    parts = [lg + fig + line + nav, fig + lg + nav, lg + line + fig + nav][order]
+    return f'<div class="center col">{parts}</div>', bg
+
+
+@style('filmremsa')
+def s5(v):
+    combos = [['slide', 'street', 'swiss'], ['street', 'slide', 'jam'], ['jam', 'swiss', 'street'], ['swiss', 'jam', 'slide'], ['slide', 'jam', 'swiss']]
+    pics = combos[v % 5]
+    if v // 5 == 3:
+        pics = pics + [P4[(v + 1) % 4]]
+    gap = ['g3', 'g0', 'g12', 'g3'][v // 5]
+    bg = 'paper' if v in (2, 7, 12) else 'night'
+    ink = ' ink' if bg == 'paper' else ''
+    cols = f'style="grid-template-columns:repeat({len(pics)},1fr)"'
+    strips = f'<div class="strips {gap}{" paper-gap" if bg == "paper" else ""}" {cols}>' + ''.join(ph(x) for x in pics) + '</div>'
+    lg = ['lg-l', 'lg-xl', 'lg-m', 'lg-l'][v // 5]
+    return strips + f'<div class="shade s-soft"></div><div class="center col">{logo(lg)}</div><div class="film-nav{ink}">{menu("row" + ink)}</div>', bg
+
+
+
+def render(families, per, key, title, intro, out_name):
+    cards = []
+    n = 0
+    for fi, (ftitle, fn) in enumerate(families):
+        for v in range(per):
+            n += 1
+            inner, bg = fn(v)
+            label = "abcde"[v] if per <= 5 else str(v + 1)
+            cards.append(
+                f'<article class="card" id="h{n}" data-n="{n}">'
+                f'<header><span class="no">{n:03d}</span><span class="title">{ftitle} <em>{label}</em></span>'
+                f'<button type="button" class="pick" aria-pressed="false" data-n="{n}">fet</button></header>'
+                f'<div class="frame"><div class="m {bg} fam{fi + 1}">{inner}</div></div></article>'
+            )
+    html = (TEMPLATE
+            .replace('<title>CORK hero-labb</title>', f'<title>{title}</title>')
+            .replace("var KEY = 'cork-hero-picks';", f"var KEY = '{key}';")
+            .replace('<!--INTRO-->', intro)
+            .replace('<!--CARDS-->', '\n'.join(cards)))
+    (Path(__file__).parent / out_name).write_text(html)
+    print(f'{out_name}: {n} heroes, {len(html) // 1024} KB')
+
 
 css_photos = '\n'.join(
     f'.ph-{k} {{ background-image: var(--{k}); background-position: {pos}; }}' for k, (_, pos) in PHOTOS.items()
 )
 vars_photos = ''.join(f'--{k}: url({src});' for k, (src, _) in PHOTOS.items())
+TEMPLATE = (Path(__file__).with_name('template.html').read_text()
+            .replace('/*PHOTO_VARS*/', vars_photos)
+            .replace('/*PHOTO_CSS*/', css_photos)
+            .replace('/*LOGO_MASK*/', logo_mask)
+            .replace('<!--SYMBOLS-->', f'<svg width="0" height="0" style="position:absolute"><symbol id="lg" viewBox="{logo_vb}">{logo_inner}</symbol><symbol id="mc" viewBox="{mascot_vb}">{mascot_inner}</symbol></svg>'))
 
-html = (Path(__file__).with_name('template.html').read_text()
-        .replace('/*PHOTO_VARS*/', vars_photos)
-        .replace('/*PHOTO_CSS*/', css_photos)
-        .replace('/*LOGO_MASK*/', logo_mask)
-        .replace('<!--SYMBOLS-->', f'<svg width="0" height="0" style="position:absolute"><symbol id="lg" viewBox="{logo_vb}">{logo_inner}</symbol><symbol id="mc" viewBox="{mascot_vb}">{mascot_inner}</symbol></svg>')
-        .replace('<!--CARDS-->', '\n'.join(cards)))
-OUT.write_text(html)
-print(f'{n} heroes, {len(html) // 1024} KB')
+render(F, 5, 'cork-hero-picks', 'CORK hero-labb',
+       '100 heroes för startsidan, 20 idéer i 5 varianter var. <a href="fem-stilar.html">Se också 100 varianter av de fem stilarna.</a>',
+       'index.html')
+render(S2, 20, 'cork-hero-picks-2', 'CORK fem stilar',
+       '100 varianter av de fem stilarna du valde: 1–20 ett foto med menyn i mitten, 21–40 loggan nere till vänster, 41–60 papper och foto, 61–80 zine, 81–100 filmremsa. <a href="index.html">Tillbaka till första labbet.</a>',
+       'fem-stilar.html')
