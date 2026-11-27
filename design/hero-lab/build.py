@@ -132,7 +132,7 @@ def f8(v):
 def f9(v):
     p = ORDER[v % 4]
     shape = ['r43', 'r45', 'r11', 'r169', 'r34'][v]
-    return f'<div class="center col">{logo("lg-s ink")}<figure class="fig">{ph(p, "frame " + shape)}<figcaption>fig. {v + 1} — {p}</figcaption></figure><p class="line ink">{LINE}</p>{menu("row ink")}</div>', 'paper'
+    return f'<div class="center col">{logo("lg-s ink")}<figure class="fig">{ph(p, "zpic " + shape)}<figcaption>fig. {v + 1} — {p}</figcaption></figure><p class="line ink">{LINE}</p>{menu("row ink")}</div>', 'paper'
 
 
 @family('zine: liten bild på svart')
@@ -143,7 +143,7 @@ def f10(v):
 
 
 def figure_white(p, shape, v):
-    return f'<figure class="fig">{ph(p, "frame " + shape)}<figcaption class="on">fig. {v + 1}</figcaption></figure>'
+    return f'<figure class="fig">{ph(p, "zpic " + shape)}<figcaption class="on">fig. {v + 1}</figcaption></figure>'
 
 
 @family('fotot inuti loggan')
@@ -257,9 +257,13 @@ def s1(v):
 def s2(v):
     p = ['street', 'slide', 'jam', 'swiss'][v % 4]
     big = ['lg-xl', 'lg-xxl', 'lg-full', 'lg-xl', 'lg-xxl'][v // 4 % 5]
-    menu_kind = 'row left' if v % 2 == 0 else 'stack left'
-    corner = [f'<span class="corner tr small">{NOTE}</span>', f'<span class="corner tl small">{LINE}</span>', '', f'<span class="corner tr small">25 ex per modell</span>'][v % 4]
     side = ' right' if v in (5, 9, 13, 17) else ''
+    if side:
+        big = 'lg-xl'
+    menu_kind = 'row left' if v % 2 == 0 or side else 'stack left'
+    corner = [f'<span class="corner tr small">{NOTE}</span>', f'<span class="corner tl small">{LINE}</span>', '', f'<span class="corner tr small">25 ex per modell</span>'][v % 4]
+    if side and 'tr' in corner:
+        corner = corner.replace('corner tr', 'corner tl')
     return ph(p) + f'<div class="shade s-bottom"></div>{corner}<div class="bl col start{side}">{logo(big)}{menu(menu_kind)}</div>', 'night'
 
 
@@ -284,7 +288,7 @@ def s4(v):
     ink = ' ink' if bg == 'paper' else ''
     cap = f'<figcaption class="{"" if bg == "paper" else "on"}">fig. {v + 1} — {p}</figcaption>'
     order = v % 3
-    fig = f'<figure class="fig">{ph(p, "frame " + shape)}{cap}</figure>'
+    fig = f'<figure class="fig">{ph(p, "zpic " + shape)}{cap}</figure>'
     lg = logo('lg-s' + ink)
     line = f'<p class="line{ink}">{LINE}</p>'
     nav = menu('row' + ink)
@@ -303,8 +307,9 @@ def s5(v):
     ink = ' ink' if bg == 'paper' else ''
     cols = f'style="grid-template-columns:repeat({len(pics)},1fr)"'
     strips = f'<div class="strips {gap}{" paper-gap" if bg == "paper" else ""}" {cols}>' + ''.join(ph(x) for x in pics) + '</div>'
-    lg = ['lg-l', 'lg-xl', 'lg-m', 'lg-l'][v // 5]
-    return strips + f'<div class="shade s-soft"></div><div class="center col">{logo(lg)}</div><div class="film-nav{ink}">{menu("row" + ink)}</div>', bg
+    top = ' top' if v % 2 else ''
+    # the logo sits in the bar with the menu, not across the seams between the photos
+    return strips + f'<div class="film-nav{ink}{top}">{logo("lg-s" + ink)}{menu("row right" + ink)}</div>', bg
 
 
 
