@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>CORK kreativa heros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600&display=swap">
+<style>
+:root {
+  /*VARS*/
+  --paper: #f4f4f2;
+  --ink: #111111;
+  --muted: #6a6a68;
+  --line: #d9d9d6;
+  --night: #0e0e0e;
+  --on: #f4f3ef;
+  --mono: 'Inconsolata', ui-monospace, Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 15px/1.5 var(--mono);
+  padding: 0 max(16px, env(safe-area-inset-right)) 80px max(16px, env(safe-area-inset-left));
+}
+button { font: inherit; }
+
+/* ---------- picker bar ---------- */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: 0 calc(-1 * max(16px, env(safe-area-inset-left)));
+  padding: 12px max(16px, env(safe-area-inset-left));
+  padding-top: max(12px, env(safe-area-inset-top));
+  background: rgb(244 244 242 / 0.94);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+}
+.bar h1 { margin: 0; font-size: 1rem; font-weight: 600; margin-right: auto; }
+.bar .count { color: var(--muted); }
+.bar button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.bar button[aria-pressed='true'], .bar .primary { background: var(--ink); color: var(--paper); }
+.picks-out { width: 100%; display: none; gap: 8px; align-items: center; }
+.picks-out.show { display: flex; }
+.picks-out input { flex: 1; min-width: 0; min-height: 40px; padding: 0 10px; font: inherit; font-size: 16px; border: 1px solid var(--line); background: #fff; }
+.intro { max-width: 70ch; color: var(--muted); margin: 18px 0 26px; }
+
+/* ---------- cards ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 540px), 1fr));
+  gap: 34px 24px;
+}
+body.only-picked .card:not(.is-picked) { display: none; }
+.card header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.card .no { font-weight: 600; }
+.card .title { flex: 1; min-width: 0; color: var(--muted); }
+.card .title em { font-style: normal; color: var(--ink); }
+.pick {
+  min-width: 64px;
+  min-height: 40px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.pick[aria-pressed='true'] { background: var(--ink); color: var(--paper); }
+.pick[aria-pressed='true']::before { content: '★ '; }
+.card.is-picked .frame { outline: 3px solid var(--ink); outline-offset: 3px; }
+.frame { container-type: inline-size; border: 1px solid var(--line); overflow: hidden; background: #fff; }
+:focus-visible { outline: 2px solid #2f6bff; outline-offset: 2px; }
+
+/* ---------- concepts ---------- */
+.k{position:relative;aspect-ratio:16/10;overflow:hidden;color:#f4f3ef;background:#0e0e0e;font-size:clamp(10px,1.75cqi,15px)}
+@container (max-width:480px){.k{aspect-ratio:9/15;font-size:12.5px}}
+.k.paper{background:#f4f3ef;color:#111}
+.k a{color:inherit;text-decoration:none}.k a:hover,.k a:focus-visible{text-decoration:underline;text-underline-offset:3px}
+.k .ph{background-size:cover;background-repeat:no-repeat;background-color:#222}
+/*PHOTOS*/
+.k .full{position:absolute;inset:0}
+/* logo and mascot are drawn once as backgrounds, with their real proportions */
+.k .lg{display:block;aspect-ratio:825/215;max-width:100%;background:center/contain no-repeat}
+.k .lg-w{background-image:var(--logo-w)}.k .lg-k{background-image:var(--logo-k)}
+.k .masc{display:block;aspect-ratio:343/534;max-width:100%;background:var(--masc) center/contain no-repeat}
+.k .nv{list-style:none;margin:0;padding:0}
+.k .nv.row{display:flex;flex-wrap:wrap;gap:.2em 1.1em}
+.k .nv.stack{display:grid;gap:.1em}
+@media (prefers-reduced-motion:reduce){.k *{animation:none!important;transition:none!important}}
+/*CONCEPTS*/
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <h1>cork hero-labb</h1>
+  <span class="count" id="count">0 feta</span>
+  <button type="button" id="only" aria-pressed="false">visa bara feta</button>
+  <button type="button" class="primary" id="copy">kopiera mina val</button>
+  <button type="button" id="clear">rensa</button>
+  <div class="picks-out" id="out"><input id="picks" readonly aria-label="dina val"><span id="copied"></span></div>
+</div>
+<p class="intro"><!--COUNT--> helt olika idéer för startsidans hero, var och en med egen layout. Några rör sig eller reagerar på muspekaren. <a href="fem-stilar.html">Fem stilar</a> · <a href="index.html">första labbet</a>. Tryck <b>fet</b> på de du gillar, sedan <b>kopiera mina val</b> och klistra in siffrorna till Claude. Valen sparas i den här webbläsaren. På mobil ser du mobilversionen av varje hero.</p>
+<main class="grid">
+<!--CARDS-->
+</main>
+<script>
+(function () {
+  var KEY = 'cork-hero-picks-kreativa';
+  var picks = [];
+  try { picks = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) {}
+  var count = document.getElementById('count');
+  var out = document.getElementById('out');
+  var field = document.getElementById('picks');
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(picks)); } catch (e) {} }
+  function render() {
+    document.querySelectorAll('.card').forEach(function (card) {
+      var n = Number(card.dataset.n), on = picks.indexOf(n) > -1;
+      card.classList.toggle('is-picked', on);
+      card.querySelector('.pick').setAttribute('aria-pressed', String(on));
+    });
+    count.textContent = picks.length + (picks.length === 1 ? ' fet' : ' feta');
+    field.value = picks.slice().sort(function (a, b) { return a - b; }).join(', ');
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.pick');
+    if (b) {
+      var n = Number(b.dataset.n), i = picks.indexOf(n);
+      if (i > -1) picks.splice(i, 1); else picks.push(n);
+      save(); render();
+    }
+    if (e.target.closest('.k a, .m a')) e.preventDefault();
+  });
+  document.getElementById('only').addEventListener('click', function () {
+    var on = document.body.classList.toggle('only-picked');
+    this.setAttribute('aria-pressed', String(on));
+  });
+  document.getElementById('clear').addEventListener('click', function () { picks = []; save(); render(); });
+  document.getElementById('copy').addEventListener('click', function () {
+    out.classList.add('show');
+    var text = field.value ? 'feta heros: ' + field.value : '';
+    field.value = text || 'inga val än';
+    var done = function (ok) { document.getElementById('copied').textContent = ok ? 'kopierat' : 'markera och kopiera'; field.select(); };
+    if (navigator.clipboard && text) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+    else done(false);
+  });
+  render();
+  document.querySelectorAll('.spotlight').forEach(function (el) {
+    el.addEventListener('pointermove', function (e) {
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    });
+  });
+  document.querySelectorAll('.swapper').forEach(function (el) {
+    var bg = el.querySelector('.swap-ph');
+    el.querySelectorAll('[data-ph]').forEach(function (a) {
+      var go = function () { bg.className = 'ph full swap-ph ph-' + a.dataset.ph; };
+      a.addEventListener('pointerenter', go); a.addEventListener('focus', go);
+    });
+  });
+})();
+</script>
+</body>
+</html>

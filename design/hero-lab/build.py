@@ -347,8 +347,8 @@ TEMPLATE = (Path(__file__).with_name('template.html').read_text()
             .replace('<!--SYMBOLS-->', f'<svg width="0" height="0" style="position:absolute"><symbol id="lg" viewBox="{logo_vb}">{logo_inner}</symbol><symbol id="mc" viewBox="{mascot_vb}">{mascot_inner}</symbol></svg>'))
 
 render(F, 5, 'cork-hero-picks', 'CORK hero-labb',
-       '100 heroes för startsidan, 20 idéer i 5 varianter var. <a href="fem-stilar.html">Se också 100 varianter av de fem stilarna.</a>',
+       '100 heroes för startsidan, 20 idéer i 5 varianter var. <a href="kreativa.html">Se de kreativa koncepten.</a> <a href="fem-stilar.html">Fem stilar.</a>',
        'index.html')
 render(S2, 20, 'cork-hero-picks-2', 'CORK fem stilar',
-       '100 varianter av de fem stilarna du valde: 1–20 ett foto med menyn i mitten, 21–40 loggan nere till vänster, 41–60 papper och foto, 61–80 zine, 81–100 filmremsa. <a href="index.html">Tillbaka till första labbet.</a>',
+       '100 varianter av de fem stilarna du valde: 1–20 ett foto med menyn i mitten, 21–40 loggan nere till vänster, 41–60 papper och foto, 61–80 zine, 81–100 filmremsa. <a href="kreativa.html">Se de kreativa koncepten.</a> <a href="index.html">Första labbet.</a>',
        'fem-stilar.html')
