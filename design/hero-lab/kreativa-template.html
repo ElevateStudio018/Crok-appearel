@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>CORK kreativa heros</title>
+<title><!--TITLE--></title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600&display=swap">
 <style>
@@ -115,13 +115,13 @@ body.only-picked .card:not(.is-picked) { display: none; }
   <button type="button" id="clear">rensa</button>
   <div class="picks-out" id="out"><input id="picks" readonly aria-label="dina val"><span id="copied"></span></div>
 </div>
-<p class="intro"><!--COUNT--> helt olika idéer för startsidans hero, var och en med egen layout. Några rör sig eller reagerar på muspekaren. <a href="fem-stilar.html">Fem stilar</a> · <a href="index.html">första labbet</a>. Tryck <b>fet</b> på de du gillar, sedan <b>kopiera mina val</b> och klistra in siffrorna till Claude. Valen sparas i den här webbläsaren. På mobil ser du mobilversionen av varje hero.</p>
+<p class="intro"><!--INTRO--> Tryck <b>fet</b> på de du gillar, sedan <b>kopiera mina val</b> och klistra in siffrorna till Claude. Valen sparas i den här webbläsaren. På mobil ser du mobilversionen av varje hero.</p>
 <main class="grid">
 <!--CARDS-->
 </main>
 <script>
 (function () {
-  var KEY = 'cork-hero-picks-kreativa';
+  var KEY = '/*KEY*/';
   var picks = [];
   try { picks = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) {}
   var count = document.getElementById('count');

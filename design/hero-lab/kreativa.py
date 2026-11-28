@@ -1,66 +1,9 @@
-"""Builds design/hero-lab/kreativa.html: 40 hero concepts for CORK, each its own idea.
+"""Builds design/hero-lab/kreativa.html: hero concepts for CORK, each its own idea.
 
 Usage: python design/hero-lab/kreativa.py   (needs Pillow)
-Self-contained like the other lab pages. The logo is an <img> with a fixed aspect
-ratio (not an inline <use>), so it draws the same in every browser.
 """
 
-import base64
-import io
-import urllib.parse
-from pathlib import Path
-
-from PIL import Image
-
-ROOT = Path(__file__).resolve().parents[2]
-HERE = Path(__file__).parent
-
-
-def photo(name, width):
-    im = Image.open(ROOT / 'src/assets/photos' / name).convert('L')
-    im = im.resize((width, round(im.size[1] * width / im.size[0])), Image.LANCZOS)
-    buf = io.BytesIO()
-    im.save(buf, 'JPEG', quality=60, optimize=True, progressive=True)
-    return 'data:image/jpeg;base64,' + base64.b64encode(buf.getvalue()).decode()
-
-
-def svg_uri(svg):
-    return 'data:image/svg+xml,' + urllib.parse.quote(svg)
-
-
-PH = {
-    'slide': (photo('night-rail-slide.jpg', 1100), '45% 40%'),
-    'street': (photo('street-rail-crowd.jpg', 1400), '55% 30%'),
-    'swiss': (photo('swiss-trick.jpg', 1200), '62% 50%'),
-    'jam': (photo('night-rail-jam.jpg', 900), '50% 45%'),
-}
-logo_src = (ROOT / 'src/assets/brand/cork-logo.svg').read_text().strip()
-logo_src = logo_src.replace('<svg ', '<svg width="825" height="215" ', 1)
-LOGO = {
-    'w': svg_uri(logo_src.replace('currentColor', '#f4f3ef')),
-    'k': svg_uri(logo_src.replace('currentColor', '#111111')),
-}
-mascot_src = (ROOT / 'src/assets/brand/cork-mascot.svg').read_text().strip()
-MASCOT = svg_uri(mascot_src.replace('<svg ', '<svg width="343" height="534" ', 1))
-
-NAV = ['videor', 'shop', 'team', 'om oss', 'backstage', 'nyhetsbrev', 'info']
-
-
-def lg(color='w', cls=''):
-    return f'<span class="lg lg-{color} {cls}" role="img" aria-label="cork"></span>'
-
-
-def mascot(cls=''):
-    return f'<span class="masc {cls}" aria-hidden="true"></span>'
-
-
-def nav(cls='', items=NAV, sep=''):
-    return f'<ul class="nv {cls}">' + ''.join(f'<li><a href="#">{n}</a>{sep}</li>' for n in items) + '</ul>'
-
-
-def ph(name, cls='', style=''):
-    return f'<div class="ph ph-{name} {cls}" style="{style}"></div>'
-
+from labkit import NAV, lg, mascot, nav, ph, render
 
 C = []
 
@@ -509,28 +452,6 @@ def k(n):
     return html, css, 'paper'
 
 
-# ---------- render ----------
-cards, styles = [], []
-for i, (title, fn) in enumerate(C, 1):
-    html, css, bg = fn(i)
-    if bg.startswith('street'):
-        html = ph('street', 'full dim') + html
-    scoped = css  # class names are unique per concept
-    styles.append(scoped)
-    bg_cls = {'night': 'night', 'paper': 'paper', 'street': 'night'}.get(bg.split()[0], 'night')
-    extra = ' '.join(bg.split()[1:])
-    cards.append(
-        f'<article class="card" id="h{i}" data-n="{i}"><header><span class="no">{i:02d}</span><span class="title">{title}</span>'
-        f'<button type="button" class="pick" aria-pressed="false" data-n="{i}">fet</button></header>'
-        f'<div class="frame"><div class="k {bg_cls} {extra}">{html}</div></div></article>'
-    )
-
-photo_vars = ''.join(f'--{k}:url({src});' for k, (src, _) in PH.items())
-photo_vars += f'--logo-w:url("{LOGO["w"]}");--logo-k:url("{LOGO["k"]}");--masc:url("{MASCOT}");'
-photo_css = ''.join(f'.ph-{k}{{background-image:var(--{k});background-position:{pos}}}' for k, (_, pos) in PH.items())
-page = (HERE / 'kreativa-template.html').read_text()
-page = (page.replace('/*VARS*/', photo_vars).replace('/*PHOTOS*/', photo_css)
-        .replace('/*CONCEPTS*/', '\n'.join(styles)).replace('<!--CARDS-->', '\n'.join(cards))
-        .replace('<!--COUNT-->', str(len(C))))
-(HERE / 'kreativa.html').write_text(page)
-print(f'kreativa.html: {len(C)} concepts, {len(page) // 1024} KB')
+render(C, 'kreativa.html', 'CORK kreativa heros', 'cork-hero-picks-kreativa',
+       '{count} helt olika idéer för startsidans hero, var och en med egen layout. Några rör sig eller reagerar på muspekaren. '
+       '<a href="clean.html">Clean</a> · <a href="fem-stilar.html">fem stilar</a> · <a href="index.html">första labbet</a>.')
